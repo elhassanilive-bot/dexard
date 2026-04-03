@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
@@ -32,14 +32,15 @@ function NavLink({ href, active, children }) {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [q, setQ] = useState(searchParams.get("q") || "");
+    const [q, setQ] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [authUser, setAuthUser] = useState(null);
 
   useEffect(() => {
-    setQ(searchParams.get("q") || "");
-  }, [searchParams]);
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setQ(params.get("q") || "");
+  }, [pathname]);
 
   useEffect(() => {
     let mounted = true;

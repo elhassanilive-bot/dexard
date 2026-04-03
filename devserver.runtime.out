@@ -219,3 +219,7 @@
  GET /channel/said 200 in 121ms (compile: 11ms, render: 110ms)
  GET /channel/said 200 in 121ms (compile: 20ms, render: 102ms)
  GET /channel/said 200 in 210ms (compile: 33ms, render: 178ms)
+ GET /channel/said 200 in 325ms (compile: 136ms, render: 189ms)
+ GET /channel/said 200 in 236ms (compile: 41ms, render: 194ms)
+ GET /channel/said 200 in 673ms (compile: 278ms, render: 396ms)
+ GET /channel/said 200 in 126ms (compile: 14ms, render: 112ms)
