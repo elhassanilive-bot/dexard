@@ -3,22 +3,22 @@
 import { useEffect, useRef, useState } from "react";
 import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import TextAlign from "@tiptap/extension-text-align";
-import TextStyle from "@tiptap/extension-text-style";
-import Color from "@tiptap/extension-color";
-import Highlight from "@tiptap/extension-highlight";
-import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
-import Youtube from "@tiptap/extension-youtube";
+import { Underline } from "@tiptap/extension-underline";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
+import { Highlight } from "@tiptap/extension-highlight";
+import { Link } from "@tiptap/extension-link";
+import { Image } from "@tiptap/extension-image";
+import { Youtube } from "@tiptap/extension-youtube";
 import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
-import Placeholder from "@tiptap/extension-placeholder";
+import { Placeholder } from "@tiptap/extension-placeholder";
 import { Extension, Node, mergeAttributes } from "@tiptap/core";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
 const BLOG_MEDIA_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_BLOG_BUCKET || "blog-media";
 const FONT_FAMILIES = [
-  { label: "الافتراضي", value: "" },
+  { label: "Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠ", value: "" },
   { label: "Cairo", value: "rt-font-cairo" },
   { label: "Almarai", value: "rt-font-almarai" },
   { label: "Tajawal", value: "rt-font-tajawal" },
@@ -26,7 +26,7 @@ const FONT_FAMILIES = [
   { label: "Monospace", value: "rt-font-mono" },
 ];
 const FONT_SIZES = [
-  { label: "الحجم", value: "" },
+  { label: "Ø§Ù„Ø­Ø¬Ù…", value: "" },
   { label: "14", value: "rt-size-14" },
   { label: "16", value: "rt-size-16" },
   { label: "18", value: "rt-size-18" },
@@ -180,7 +180,7 @@ const ButtonLink = Node.create({
   addAttributes() {
     return {
       href: { default: null },
-      label: { default: "زر" },
+      label: { default: "Ø²Ø±" },
       variant: { default: "primary" },
     };
   },
@@ -308,7 +308,7 @@ function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("تعذر قراءة الصورة."));
+    reader.onerror = () => reject(new Error("ØªØ¹Ø°Ø± Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„ØµÙˆØ±Ø©."));
     reader.readAsDataURL(file);
   });
 }
@@ -317,7 +317,7 @@ function loadImageDimensions(src) {
   return new Promise((resolve, reject) => {
     const image = new window.Image();
     image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
-    image.onerror = () => reject(new Error("تعذر تحميل الصورة."));
+    image.onerror = () => reject(new Error("ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„ØµÙˆØ±Ø©."));
     image.src = src;
   });
 }
@@ -334,7 +334,7 @@ function escapeHtml(value) {
 async function uploadMediaFileToSupabase(file, folder = "editor") {
   const supabase = await getSupabaseClient();
   if (!supabase) {
-    throw new Error("Supabase غير مُعد. أضف مفاتيح Supabase أولًا.");
+    throw new Error("Supabase ØºÙŠØ± Ù…ÙØ¹Ø¯. Ø£Ø¶Ù Ù…ÙØ§ØªÙŠØ­ Supabase Ø£ÙˆÙ„Ù‹Ø§.");
   }
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
@@ -346,13 +346,13 @@ async function uploadMediaFileToSupabase(file, folder = "editor") {
 
   if (error) {
     throw new Error(
-      `تعذر رفع الملف إلى bucket "${BLOG_MEDIA_BUCKET}". أنشئ bucket بالاسم نفسه وشغّل سياسات الملف supabase/blog_storage.sql ثم أعد المحاولة.`
+      `ØªØ¹Ø°Ø± Ø±ÙØ¹ Ø§Ù„Ù…Ù„Ù Ø¥Ù„Ù‰ bucket "${BLOG_MEDIA_BUCKET}". Ø£Ù†Ø´Ø¦ bucket Ø¨Ø§Ù„Ø§Ø³Ù… Ù†ÙØ³Ù‡ ÙˆØ´ØºÙ‘Ù„ Ø³ÙŠØ§Ø³Ø§Øª Ø§Ù„Ù…Ù„Ù supabase/blog_storage.sql Ø«Ù… Ø£Ø¹Ø¯ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©.`
     );
   }
 
   const { data } = supabase.storage.from(BLOG_MEDIA_BUCKET).getPublicUrl(path);
   if (!data?.publicUrl) {
-    throw new Error("تم الرفع لكن لم نتمكن من إنشاء رابط عام للملف.");
+    throw new Error("ØªÙ… Ø§Ù„Ø±ÙØ¹ Ù„ÙƒÙ† Ù„Ù… Ù†ØªÙ…ÙƒÙ† Ù…Ù† Ø¥Ù†Ø´Ø§Ø¡ Ø±Ø§Ø¨Ø· Ø¹Ø§Ù… Ù„Ù„Ù…Ù„Ù.");
   }
 
   return data.publicUrl;
@@ -462,9 +462,9 @@ function CropImageModal({ cropState, setCropState, onClose, onConfirm }) {
       <div className="w-full max-w-4xl rounded-[2rem] bg-white p-6 shadow-2xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h3 className="text-2xl font-black text-slate-950">قص الصورة قبل الإدراج</h3>
+            <h3 className="text-2xl font-black text-slate-950">Ù‚Øµ Ø§Ù„ØµÙˆØ±Ø© Ù‚Ø¨Ù„ Ø§Ù„Ø¥Ø¯Ø±Ø§Ø¬</h3>
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              اسحب إطار القص بالماوس وغيّر حجمه من الزوايا حتى تختار الجزء الذي تريد رفعه.
+              Ø§Ø³Ø­Ø¨ Ø¥Ø·Ø§Ø± Ø§Ù„Ù‚Øµ Ø¨Ø§Ù„Ù…Ø§ÙˆØ³ ÙˆØºÙŠÙ‘Ø± Ø­Ø¬Ù…Ù‡ Ù…Ù† Ø§Ù„Ø²ÙˆØ§ÙŠØ§ Ø­ØªÙ‰ ØªØ®ØªØ§Ø± Ø§Ù„Ø¬Ø²Ø¡ Ø§Ù„Ø°ÙŠ ØªØ±ÙŠØ¯ Ø±ÙØ¹Ù‡.
             </p>
           </div>
           <button
@@ -472,7 +472,7 @@ function CropImageModal({ cropState, setCropState, onClose, onConfirm }) {
             onClick={onClose}
             className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:text-orange-700"
           >
-            إلغاء
+            Ø¥Ù„ØºØ§Ø¡
           </button>
         </div>
 
@@ -513,13 +513,13 @@ function CropImageModal({ cropState, setCropState, onClose, onConfirm }) {
 
           <div className="space-y-5">
             <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-600">
-              <div className="font-semibold text-slate-900">أبعاد القص الحالية</div>
+              <div className="font-semibold text-slate-900">Ø£Ø¨Ø¹Ø§Ø¯ Ø§Ù„Ù‚Øµ Ø§Ù„Ø­Ø§Ù„ÙŠØ©</div>
               <div className="mt-2">
-                {Math.round((cropRect.width / displayWidth) * cropState.width)} ×{" "}
+                {Math.round((cropRect.width / displayWidth) * cropState.width)} Ã—{" "}
                 {Math.round((cropRect.height / displayHeight) * cropState.height)} px
               </div>
               <div className="mt-3 text-xs text-slate-500">
-                حرّك الإطار من الوسط، أو اسحب أي زاوية للحصول على قص حر تمامًا بدون sliders.
+                Ø­Ø±Ù‘Ùƒ Ø§Ù„Ø¥Ø·Ø§Ø± Ù…Ù† Ø§Ù„ÙˆØ³Ø·ØŒ Ø£Ùˆ Ø§Ø³Ø­Ø¨ Ø£ÙŠ Ø²Ø§ÙˆÙŠØ© Ù„Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ù‚Øµ Ø­Ø± ØªÙ…Ø§Ù…Ù‹Ø§ Ø¨Ø¯ÙˆÙ† sliders.
               </div>
             </div>
 
@@ -529,7 +529,7 @@ function CropImageModal({ cropState, setCropState, onClose, onConfirm }) {
                 onClick={onConfirm}
                 className="inline-flex items-center justify-center rounded-2xl bg-[var(--blog-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--blog-accent-strong)]"
               >
-                قص وإدراج
+                Ù‚Øµ ÙˆØ¥Ø¯Ø±Ø§Ø¬
               </button>
               <button
                 type="button"
@@ -546,7 +546,7 @@ function CropImageModal({ cropState, setCropState, onClose, onConfirm }) {
                 }
                 className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:text-orange-700"
               >
-                إعادة ضبط
+                Ø¥Ø¹Ø§Ø¯Ø© Ø¶Ø¨Ø·
               </button>
             </div>
           </div>
@@ -584,7 +584,7 @@ function EditorInputModal({ modalState, setModalState }) {
             onClick={() => setModalState(null)}
             className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:text-orange-700"
           >
-            إغلاق
+            Ø¥ØºÙ„Ø§Ù‚
           </button>
         </div>
 
@@ -632,7 +632,7 @@ function EditorInputModal({ modalState, setModalState }) {
             onClick={() => setModalState(null)}
             className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-orange-200 hover:text-orange-700"
           >
-            إلغاء
+            Ø¥Ù„ØºØ§Ø¡
           </button>
           <button
             type="button"
@@ -644,7 +644,7 @@ function EditorInputModal({ modalState, setModalState }) {
               if (result?.ok === false) {
                 setModalState((current) => ({
                   ...current,
-                  error: result.error || "تعذر تنفيذ العملية.",
+                  error: result.error || "ØªØ¹Ø°Ø± ØªÙ†ÙÙŠØ° Ø§Ù„Ø¹Ù…Ù„ÙŠØ©.",
                 }));
                 return;
               }
@@ -653,7 +653,7 @@ function EditorInputModal({ modalState, setModalState }) {
             }}
             className="inline-flex items-center justify-center rounded-2xl bg-[var(--blog-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--blog-accent-strong)]"
           >
-            حفظ
+            Ø­ÙØ¸
           </button>
         </div>
 
@@ -711,16 +711,16 @@ function ResizableImageView({ node, updateAttributes, selected, deleteNode }) {
     if (!file) return;
 
     try {
-      setReplaceState({ message: "جارٍ رفع الصورة البديلة...", error: false, pending: true });
+      setReplaceState({ message: "Ø¬Ø§Ø±Ù Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ø¨Ø¯ÙŠÙ„Ø©...", error: false, pending: true });
       const publicUrl = await uploadMediaFileToSupabase(file);
       updateAttributes({
         src: publicUrl,
         alt: altText || file.name.replace(/\.[^.]+$/, ""),
       });
-      setReplaceState({ message: "تم استبدال الصورة بنجاح.", error: false, pending: false });
+      setReplaceState({ message: "ØªÙ… Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø§Ù„ØµÙˆØ±Ø© Ø¨Ù†Ø¬Ø§Ø­.", error: false, pending: false });
     } catch (error) {
       setReplaceState({
-        message: error instanceof Error ? error.message : "تعذر استبدال الصورة.",
+        message: error instanceof Error ? error.message : "ØªØ¹Ø°Ø± Ø§Ø³ØªØ¨Ø¯Ø§Ù„ Ø§Ù„ØµÙˆØ±Ø©.",
         error: true,
         pending: false,
       });
@@ -744,25 +744,25 @@ function ResizableImageView({ node, updateAttributes, selected, deleteNode }) {
         {selected ? (
           <div className="blog-image-toolbar" contentEditable={false}>
             <button type="button" onClick={() => setAlign("right")} className={align === "right" ? "is-active" : ""}>
-              يمين
+              ÙŠÙ…ÙŠÙ†
             </button>
             <button type="button" onClick={() => setAlign("center")} className={align === "center" ? "is-active" : ""}>
-              وسط
+              ÙˆØ³Ø·
             </button>
             <button type="button" onClick={() => setAlign("left")} className={align === "left" ? "is-active" : ""}>
-              يسار
+              ÙŠØ³Ø§Ø±
             </button>
             <button type="button" onClick={() => updateAttributes({ rotation: (rotation - 90 + 360) % 360 })}>
-              تدوير-
+              ØªØ¯ÙˆÙŠØ±-
             </button>
             <button type="button" onClick={() => updateAttributes({ rotation: (rotation + 90) % 360 })}>
-              تدوير+
+              ØªØ¯ÙˆÙŠØ±+
             </button>
             <button type="button" onClick={() => replaceInputRef.current?.click()} disabled={replaceState.pending}>
-              استبدال
+              Ø§Ø³ØªØ¨Ø¯Ø§Ù„
             </button>
             <button type="button" onClick={() => deleteNode()}>
-              حذف
+              Ø­Ø°Ù
             </button>
             <span className="blog-image-size-badge">{widthPercent}%</span>
           </div>
@@ -773,14 +773,14 @@ function ResizableImageView({ node, updateAttributes, selected, deleteNode }) {
             type="text"
             value={caption}
             onChange={(event) => updateAttributes({ caption: event.target.value })}
-            placeholder="أضف caption تحت الصورة..."
+            placeholder="Ø£Ø¶Ù caption ØªØ­Øª Ø§Ù„ØµÙˆØ±Ø©..."
             className="blog-image-caption-input"
           />
           <input
             type="text"
             value={altText}
             onChange={(event) => updateAttributes({ alt: event.target.value })}
-            placeholder="نص بديل للصورة لتحسين الوصول و SEO..."
+            placeholder="Ù†Øµ Ø¨Ø¯ÙŠÙ„ Ù„Ù„ØµÙˆØ±Ø© Ù„ØªØ­Ø³ÙŠÙ† Ø§Ù„ÙˆØµÙˆÙ„ Ùˆ SEO..."
             className="blog-image-alt-input"
           />
         </div>
@@ -806,7 +806,7 @@ function ResizableImageView({ node, updateAttributes, selected, deleteNode }) {
           className="blog-image-resize-handle"
           onMouseDown={handleResizeStart}
           aria-label="Resize image"
-          title="اسحب لتغيير حجم الصورة"
+          title="Ø§Ø³Ø­Ø¨ Ù„ØªØºÙŠÙŠØ± Ø­Ø¬Ù… Ø§Ù„ØµÙˆØ±Ø©"
         />
       </div>
     </NodeViewWrapper>
@@ -922,7 +922,7 @@ export default function RichTextEditorField({
       TableHeader,
       TableCell,
       Placeholder.configure({
-        placeholder: "ابدأ كتابة المقال بتنسيق غني ومرن...",
+        placeholder: "Ø§Ø¨Ø¯Ø£ ÙƒØªØ§Ø¨Ø© Ø§Ù„Ù…Ù‚Ø§Ù„ Ø¨ØªÙ†Ø³ÙŠÙ‚ ØºÙ†ÙŠ ÙˆÙ…Ø±Ù†...",
       }),
       AudioBlock,
       VideoBlock,
@@ -951,7 +951,7 @@ export default function RichTextEditorField({
   if (!editor) {
     return (
       <div className="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-10 text-center text-slate-500">
-        جارٍ تحميل المحرر...
+        Ø¬Ø§Ø±Ù ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø­Ø±Ø±...
       </div>
     );
   }
@@ -984,7 +984,7 @@ export default function RichTextEditorField({
 
     const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
     if (!blob) {
-      throw new Error("تعذر إنشاء الصورة المقصوصة.");
+      throw new Error("ØªØ¹Ø°Ø± Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ù…Ù‚ØµÙˆØµØ©.");
     }
 
     return new File([blob], state.file.name.replace(/\.\w+$/, "") + "-cropped.jpg", { type: "image/jpeg" });
@@ -1019,7 +1019,7 @@ export default function RichTextEditorField({
       } catch (error) {
         setUploadState({
           kind,
-          message: error instanceof Error ? error.message : "تعذر تجهيز الصورة للقص.",
+          message: error instanceof Error ? error.message : "ØªØ¹Ø°Ø± ØªØ¬Ù‡ÙŠØ² Ø§Ù„ØµÙˆØ±Ø© Ù„Ù„Ù‚Øµ.",
           error: true,
         });
       }
@@ -1027,7 +1027,7 @@ export default function RichTextEditorField({
     }
 
     try {
-      setUploadState({ kind, message: `جارٍ رفع ${kind}...`, error: false });
+      setUploadState({ kind, message: `Ø¬Ø§Ø±Ù Ø±ÙØ¹ ${kind}...`, error: false });
       const publicUrl = await uploadMediaFileToSupabase(file);
 
       if (kind === "image") {
@@ -1038,11 +1038,11 @@ export default function RichTextEditorField({
         editor.chain().focus().insertContent({ type: "audioBlock", attrs: { src: publicUrl, title: file.name } }).run();
       }
 
-      setUploadState({ kind, message: `تم رفع ${kind} وإدراجه في المقال.`, error: false });
+      setUploadState({ kind, message: `ØªÙ… Ø±ÙØ¹ ${kind} ÙˆØ¥Ø¯Ø±Ø§Ø¬Ù‡ ÙÙŠ Ø§Ù„Ù…Ù‚Ø§Ù„.`, error: false });
     } catch (error) {
       setUploadState({
         kind,
-        message: error instanceof Error ? error.message : "تعذر رفع الملف.",
+        message: error instanceof Error ? error.message : "ØªØ¹Ø°Ø± Ø±ÙØ¹ Ø§Ù„Ù…Ù„Ù.",
         error: true,
       });
     }
@@ -1090,7 +1090,7 @@ export default function RichTextEditorField({
           if (!cropState) return;
 
           try {
-            setUploadState({ kind: "image", message: "جارٍ قص الصورة ورفعها...", error: false });
+            setUploadState({ kind: "image", message: "Ø¬Ø§Ø±Ù Ù‚Øµ Ø§Ù„ØµÙˆØ±Ø© ÙˆØ±ÙØ¹Ù‡Ø§...", error: false });
             const croppedFile = await createCroppedImageFile(cropState);
             const publicUrl = await uploadMediaFileToSupabase(croppedFile);
             editor.chain().focus().setImage({
@@ -1101,12 +1101,12 @@ export default function RichTextEditorField({
               rotation: 0,
               caption: "",
             }).run();
-            setUploadState({ kind: "image", message: "تم رفع الصورة المقصوصة وإدراجها.", error: false });
+            setUploadState({ kind: "image", message: "ØªÙ… Ø±ÙØ¹ Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ù…Ù‚ØµÙˆØµØ© ÙˆØ¥Ø¯Ø±Ø§Ø¬Ù‡Ø§.", error: false });
             setCropState(null);
           } catch (error) {
             setUploadState({
               kind: "image",
-              message: error instanceof Error ? error.message : "تعذر قص الصورة أو رفعها.",
+              message: error instanceof Error ? error.message : "ØªØ¹Ø°Ø± Ù‚Øµ Ø§Ù„ØµÙˆØ±Ø© Ø£Ùˆ Ø±ÙØ¹Ù‡Ø§.",
               error: true,
             });
           }
@@ -1120,7 +1120,7 @@ export default function RichTextEditorField({
 
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-300 bg-[#fcfcfc] px-3 py-3">
         <ToolbarSelect
-          title="نوع الخط"
+          title="Ù†ÙˆØ¹ Ø§Ù„Ø®Ø·"
           value={currentFontFamily}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -1133,7 +1133,7 @@ export default function RichTextEditorField({
           options={FONT_FAMILIES}
         />
         <ToolbarSelect
-          title="حجم الخط"
+          title="Ø­Ø¬Ù… Ø§Ù„Ø®Ø·"
           value={currentFontSize}
           onChange={(event) => {
             const nextValue = event.target.value;
@@ -1146,30 +1146,30 @@ export default function RichTextEditorField({
           options={FONT_SIZES}
         />
         <ToolbarDivider />
-        <ToolbarButton title="عنوان 1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })}>
+        <ToolbarButton title="Ø¹Ù†ÙˆØ§Ù† 1" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })}>
           <IconFrame><strong>H1</strong></IconFrame>
         </ToolbarButton>
-        <ToolbarButton title="عنوان 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })}>
+        <ToolbarButton title="Ø¹Ù†ÙˆØ§Ù† 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })}>
           <IconFrame><strong>H2</strong></IconFrame>
         </ToolbarButton>
-        <ToolbarButton title="عنوان 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })}>
+        <ToolbarButton title="Ø¹Ù†ÙˆØ§Ù† 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })}>
           <IconFrame><strong>H3</strong></IconFrame>
         </ToolbarButton>
-        <ToolbarButton title="فقرة" onClick={() => editor.chain().focus().setParagraph().run()} active={editor.isActive("paragraph")}>
+        <ToolbarButton title="ÙÙ‚Ø±Ø©" onClick={() => editor.chain().focus().setParagraph().run()} active={editor.isActive("paragraph")}>
           <IconFrame>P</IconFrame>
         </ToolbarButton>
         <ToolbarDivider />
-        <ToolbarButton title="عريض" onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
+        <ToolbarButton title="Ø¹Ø±ÙŠØ¶" onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
           <IconFrame><strong>B</strong></IconFrame>
         </ToolbarButton>
-        <ToolbarButton title="مائل" onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}>
+        <ToolbarButton title="Ù…Ø§Ø¦Ù„" onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}>
           <IconFrame><em>I</em></IconFrame>
         </ToolbarButton>
-        <ToolbarButton title="تسطير" onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")}>
+        <ToolbarButton title="ØªØ³Ø·ÙŠØ±" onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")}>
           <SvgIcon><path d="M6 4v6a6 6 0 0 0 12 0V4" /><path d="M4 20h16" /></SvgIcon>
         </ToolbarButton>
         <ColorButton
-          title="لون النص"
+          title="Ù„ÙˆÙ† Ø§Ù„Ù†Øµ"
           defaultValue="#111111"
           onMouseDown={rememberSelection}
           onChange={(event) => chainWithSelection().setColor(event.target.value).run()}
@@ -1177,7 +1177,7 @@ export default function RichTextEditorField({
           <SvgIcon><path d="M4 20h16" /><path d="M9 4h6" /><path d="M7 16 12 4l5 12" /></SvgIcon>
         </ColorButton>
         <ColorButton
-          title="لون الخلفية"
+          title="Ù„ÙˆÙ† Ø§Ù„Ø®Ù„ÙÙŠØ©"
           defaultValue="#fde68a"
           onMouseDown={rememberSelection}
           onChange={(event) => chainWithSelection().setHighlight({ color: event.target.value }).run()}
@@ -1185,37 +1185,37 @@ export default function RichTextEditorField({
           <SvgIcon><path d="M5 19h14" /><path d="m7 16 5-11 5 11" /><path d="M8 13h8" /></SvgIcon>
         </ColorButton>
         <ToolbarDivider />
-        <ToolbarButton title="اقتباس" onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")}>
+        <ToolbarButton title="Ø§Ù‚ØªØ¨Ø§Ø³" onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")}>
           <SvgIcon><path d="M8 10h4v4H8z" /><path d="M4 10h2v6H4z" /><path d="M18 10h2v6h-2z" /><path d="M12 10h4v4h-4z" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="قائمة نقطية" onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}>
+        <ToolbarButton title="Ù‚Ø§Ø¦Ù…Ø© Ù†Ù‚Ø·ÙŠØ©" onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}>
           <SvgIcon><path d="M9 7h11" /><path d="M9 12h11" /><path d="M9 17h11" /><circle cx="5" cy="7" r="1" fill="currentColor" stroke="none" /><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="5" cy="17" r="1" fill="currentColor" stroke="none" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="قائمة مرقمة" onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")}>
+        <ToolbarButton title="Ù‚Ø§Ø¦Ù…Ø© Ù…Ø±Ù‚Ù…Ø©" onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")}>
           <SvgIcon><path d="M10 7h10" /><path d="M10 12h10" /><path d="M10 17h10" /><path d="M4 7h2v4" /><path d="M4 11h3" /><path d="M4 16c0-1 1-2 2-2s2 1 2 2c0 2-4 1-4 3h4" /></SvgIcon>
         </ToolbarButton>
         <ToolbarDivider />
-        <ToolbarButton title="محاذاة يسار" onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })}>
+        <ToolbarButton title="Ù…Ø­Ø§Ø°Ø§Ø© ÙŠØ³Ø§Ø±" onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })}>
           <SvgIcon><path d="M4 7h16" /><path d="M4 12h10" /><path d="M4 17h14" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="محاذاة وسط" onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })}>
+        <ToolbarButton title="Ù…Ø­Ø§Ø°Ø§Ø© ÙˆØ³Ø·" onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })}>
           <SvgIcon><path d="M5 7h14" /><path d="M7 12h10" /><path d="M6 17h12" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="محاذاة يمين" onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })}>
+        <ToolbarButton title="Ù…Ø­Ø§Ø°Ø§Ø© ÙŠÙ…ÙŠÙ†" onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })}>
           <SvgIcon><path d="M4 7h16" /><path d="M10 12h10" /><path d="M6 17h14" /></SvgIcon>
         </ToolbarButton>
         <ToolbarDivider />
         <ToolbarButton
-          title="رابط"
+          title="Ø±Ø§Ø¨Ø·"
           onMouseDown={rememberSelection}
           onClick={() =>
             openInputModal({
-              title: "إضافة رابط",
-              description: "أدخل الرابط الذي تريد ربط النص به.",
+              title: "Ø¥Ø¶Ø§ÙØ© Ø±Ø§Ø¨Ø·",
+              description: "Ø£Ø¯Ø®Ù„ Ø§Ù„Ø±Ø§Ø¨Ø· Ø§Ù„Ø°ÙŠ ØªØ±ÙŠØ¯ Ø±Ø¨Ø· Ø§Ù„Ù†Øµ Ø¨Ù‡.",
               fields: [
                 {
                   key: "href",
-                  label: "الرابط",
+                  label: "Ø§Ù„Ø±Ø§Ø¨Ø·",
                   type: "url",
                   dir: "ltr",
                   placeholder: "https://example.com",
@@ -1223,7 +1223,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.href?.trim()) {
-                  return { ok: false, error: "الرابط مطلوب." };
+                  return { ok: false, error: "Ø§Ù„Ø±Ø§Ø¨Ø· Ù…Ø·Ù„ÙˆØ¨." };
                 }
                 chainWithSelection().extendMarkRange("link").setLink({ href: values.href.trim() }).run();
                 return { ok: true };
@@ -1234,25 +1234,25 @@ export default function RichTextEditorField({
         >
           <SvgIcon><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" /><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="رفع صورة" onClick={() => imageInputRef.current?.click()}>
+        <ToolbarButton title="Ø±ÙØ¹ ØµÙˆØ±Ø©" onClick={() => imageInputRef.current?.click()}>
           <SvgIcon><rect x="4" y="5" width="16" height="14" rx="2" /><path d="m8 14 3-3 5 5" /><circle cx="9" cy="9" r="1.3" fill="currentColor" stroke="none" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="رفع فيديو" onClick={() => videoInputRef.current?.click()}>
+        <ToolbarButton title="Ø±ÙØ¹ ÙÙŠØ¯ÙŠÙˆ" onClick={() => videoInputRef.current?.click()}>
           <SvgIcon><rect x="4" y="6" width="16" height="12" rx="2" /><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="رفع صوت" onClick={() => audioInputRef.current?.click()}>
+        <ToolbarButton title="Ø±ÙØ¹ ØµÙˆØª" onClick={() => audioInputRef.current?.click()}>
           <SvgIcon><path d="M11 5 7 8H4v8h3l4 3z" /><path d="M16 9a4 4 0 0 1 0 6" /><path d="M18 7a7 7 0 0 1 0 10" /></SvgIcon>
         </ToolbarButton>
         <ToolbarButton
           title="YouTube"
           onClick={() =>
             openInputModal({
-              title: "إضافة فيديو YouTube",
-              description: "ألصق رابط الفيديو، وسيتم تحويله إلى embed داخل المقال.",
+              title: "Ø¥Ø¶Ø§ÙØ© ÙÙŠØ¯ÙŠÙˆ YouTube",
+              description: "Ø£Ù„ØµÙ‚ Ø±Ø§Ø¨Ø· Ø§Ù„ÙÙŠØ¯ÙŠÙˆØŒ ÙˆØ³ÙŠØªÙ… ØªØ­ÙˆÙŠÙ„Ù‡ Ø¥Ù„Ù‰ embed Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù‚Ø§Ù„.",
               fields: [
                 {
                   key: "src",
-                  label: "رابط YouTube",
+                  label: "Ø±Ø§Ø¨Ø· YouTube",
                   type: "url",
                   dir: "ltr",
                   placeholder: "https://www.youtube.com/watch?v=...",
@@ -1260,7 +1260,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.src?.trim()) {
-                  return { ok: false, error: "رابط الفيديو مطلوب." };
+                  return { ok: false, error: "Ø±Ø§Ø¨Ø· Ø§Ù„ÙÙŠØ¯ÙŠÙˆ Ù…Ø·Ù„ÙˆØ¨." };
                 }
                 editor.commands.setYoutubeVideo({
                   src: values.src.trim(),
@@ -1275,28 +1275,28 @@ export default function RichTextEditorField({
           <SvgIcon><rect x="3" y="6" width="18" height="12" rx="4" /><path d="m11 9 4 3-4 3z" fill="currentColor" stroke="none" /></SvgIcon>
         </ToolbarButton>
         <ToolbarButton
-          title="زر"
+          title="Ø²Ø±"
           onClick={() =>
             openInputModal({
-              title: "إضافة زر",
-              description: "أنشئ زرًا تفاعليًا داخل المقال مع النص والرابط ونوع الزر.",
+              title: "Ø¥Ø¶Ø§ÙØ© Ø²Ø±",
+              description: "Ø£Ù†Ø´Ø¦ Ø²Ø±Ù‹Ø§ ØªÙØ§Ø¹Ù„ÙŠÙ‹Ø§ Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù‚Ø§Ù„ Ù…Ø¹ Ø§Ù„Ù†Øµ ÙˆØ§Ù„Ø±Ø§Ø¨Ø· ÙˆÙ†ÙˆØ¹ Ø§Ù„Ø²Ø±.",
               fields: [
                 {
                   key: "label",
-                  label: "نص الزر",
-                  placeholder: "اقرأ المزيد",
-                  defaultValue: "اقرأ المزيد",
+                  label: "Ù†Øµ Ø§Ù„Ø²Ø±",
+                  placeholder: "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù…Ø²ÙŠØ¯",
+                  defaultValue: "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù…Ø²ÙŠØ¯",
                 },
                 {
                   key: "href",
-                  label: "الرابط",
+                  label: "Ø§Ù„Ø±Ø§Ø¨Ø·",
                   type: "url",
                   dir: "ltr",
                   placeholder: "https://example.com",
                 },
                 {
                   key: "variant",
-                  label: "نوع الزر",
+                  label: "Ù†ÙˆØ¹ Ø§Ù„Ø²Ø±",
                   type: "select",
                   defaultValue: "primary",
                   options: [
@@ -1307,7 +1307,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.label?.trim() || !values.href?.trim()) {
-                  return { ok: false, error: "نص الزر والرابط مطلوبان." };
+                  return { ok: false, error: "Ù†Øµ Ø§Ù„Ø²Ø± ÙˆØ§Ù„Ø±Ø§Ø¨Ø· Ù…Ø·Ù„ÙˆØ¨Ø§Ù†." };
                 }
                 editor.chain().focus().insertContent({
                   type: "buttonLink",
@@ -1328,19 +1328,19 @@ export default function RichTextEditorField({
           title="Embed"
           onClick={() =>
             openInputModal({
-              title: "إضافة Embed",
-              description: "أدخل رابط iframe أو مصدر embed ليظهر كعنصر مضمّن داخل المقال.",
+              title: "Ø¥Ø¶Ø§ÙØ© Embed",
+              description: "Ø£Ø¯Ø®Ù„ Ø±Ø§Ø¨Ø· iframe Ø£Ùˆ Ù…ØµØ¯Ø± embed Ù„ÙŠØ¸Ù‡Ø± ÙƒØ¹Ù†ØµØ± Ù…Ø¶Ù…Ù‘Ù† Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù‚Ø§Ù„.",
               fields: [
                 {
                   key: "src",
-                  label: "رابط الـ embed",
+                  label: "Ø±Ø§Ø¨Ø· Ø§Ù„Ù€ embed",
                   type: "url",
                   dir: "ltr",
                   placeholder: "https://...",
                 },
                 {
                   key: "height",
-                  label: "الارتفاع",
+                  label: "Ø§Ù„Ø§Ø±ØªÙØ§Ø¹",
                   type: "number",
                   dir: "ltr",
                   defaultValue: "420",
@@ -1349,7 +1349,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.src?.trim()) {
-                  return { ok: false, error: "رابط الـ embed مطلوب." };
+                  return { ok: false, error: "Ø±Ø§Ø¨Ø· Ø§Ù„Ù€ embed Ù…Ø·Ù„ÙˆØ¨." };
                 }
                 editor.chain().focus().insertContent({
                   type: "embedBlock",
@@ -1370,12 +1370,12 @@ export default function RichTextEditorField({
           title="HTML"
           onClick={() =>
             openInputModal({
-              title: "إضافة HTML Block",
-              description: "أدخل كود HTML مخصص ليظهر كجزء مستقل داخل المقال.",
+              title: "Ø¥Ø¶Ø§ÙØ© HTML Block",
+              description: "Ø£Ø¯Ø®Ù„ ÙƒÙˆØ¯ HTML Ù…Ø®ØµØµ Ù„ÙŠØ¸Ù‡Ø± ÙƒØ¬Ø²Ø¡ Ù…Ø³ØªÙ‚Ù„ Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù‚Ø§Ù„.",
               fields: [
                 {
                   key: "html",
-                  label: "كود HTML",
+                  label: "ÙƒÙˆØ¯ HTML",
                   type: "textarea",
                   rows: 8,
                   dir: "ltr",
@@ -1384,7 +1384,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.html?.trim()) {
-                  return { ok: false, error: "كود HTML مطلوب." };
+                  return { ok: false, error: "ÙƒÙˆØ¯ HTML Ù…Ø·Ù„ÙˆØ¨." };
                 }
                 editor.chain().focus().insertContent(values.html.trim()).run();
                 return { ok: true };
@@ -1398,12 +1398,12 @@ export default function RichTextEditorField({
           title="Code"
           onClick={() =>
             openInputModal({
-              title: "إضافة Code Block",
-              description: "أدخل الكود واختر اللغة ليظهر بتنسيق واضح داخل المقال.",
+              title: "Ø¥Ø¶Ø§ÙØ© Code Block",
+              description: "Ø£Ø¯Ø®Ù„ Ø§Ù„ÙƒÙˆØ¯ ÙˆØ§Ø®ØªØ± Ø§Ù„Ù„ØºØ© Ù„ÙŠØ¸Ù‡Ø± Ø¨ØªÙ†Ø³ÙŠÙ‚ ÙˆØ§Ø¶Ø­ Ø¯Ø§Ø®Ù„ Ø§Ù„Ù…Ù‚Ø§Ù„.",
               fields: [
                 {
                   key: "language",
-                  label: "اللغة",
+                  label: "Ø§Ù„Ù„ØºØ©",
                   type: "select",
                   defaultValue: "plaintext",
                   options: [
@@ -1419,7 +1419,7 @@ export default function RichTextEditorField({
                 },
                 {
                   key: "code",
-                  label: "الكود",
+                  label: "Ø§Ù„ÙƒÙˆØ¯",
                   type: "textarea",
                   rows: 10,
                   dir: "ltr",
@@ -1428,7 +1428,7 @@ export default function RichTextEditorField({
               ],
               onSubmit: async (values) => {
                 if (!values.code?.trim()) {
-                  return { ok: false, error: "نص الكود مطلوب." };
+                  return { ok: false, error: "Ù†Øµ Ø§Ù„ÙƒÙˆØ¯ Ù…Ø·Ù„ÙˆØ¨." };
                 }
                 const language = (values.language || "plaintext").trim();
                 const html = `<pre><code class="language-${escapeHtml(language)}">${escapeHtml(values.code)}</code></pre>`;
@@ -1441,16 +1441,16 @@ export default function RichTextEditorField({
           <SvgIcon><path d="m8 8-4 4 4 4" /><path d="m16 8 4 4-4 4" /><path d="M10 6h4" /><path d="M10 18h4" /></SvgIcon>
         </ToolbarButton>
         <ToolbarDivider />
-        <ToolbarButton title="جدول" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
+        <ToolbarButton title="Ø¬Ø¯ÙˆÙ„" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}>
           <SvgIcon><rect x="4" y="5" width="16" height="14" rx="1.5" /><path d="M4 10h16" /><path d="M4 14h16" /><path d="M10 5v14" /><path d="M14 5v14" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="إضافة عمود" onClick={() => editor.chain().focus().addColumnAfter().run()}>
+        <ToolbarButton title="Ø¥Ø¶Ø§ÙØ© Ø¹Ù…ÙˆØ¯" onClick={() => editor.chain().focus().addColumnAfter().run()}>
           <SvgIcon><rect x="4" y="5" width="10" height="14" rx="1.5" /><path d="M17 8v8" /><path d="M13 12h8" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="إضافة سطر" onClick={() => editor.chain().focus().addRowAfter().run()}>
+        <ToolbarButton title="Ø¥Ø¶Ø§ÙØ© Ø³Ø·Ø±" onClick={() => editor.chain().focus().addRowAfter().run()}>
           <SvgIcon><rect x="4" y="5" width="16" height="8" rx="1.5" /><path d="M12 16v4" /><path d="M8 18h8" /></SvgIcon>
         </ToolbarButton>
-        <ToolbarButton title="حذف جدول" onClick={() => editor.chain().focus().deleteTable().run()}>
+        <ToolbarButton title="Ø­Ø°Ù Ø¬Ø¯ÙˆÙ„" onClick={() => editor.chain().focus().deleteTable().run()}>
           <SvgIcon><rect x="4" y="5" width="16" height="14" rx="1.5" /><path d="m8 9 8 8" /><path d="m16 9-8 8" /></SvgIcon>
         </ToolbarButton>
       </div>
