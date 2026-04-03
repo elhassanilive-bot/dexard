@@ -114,11 +114,34 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="shrink-0 rounded-2xl bg-gradient-to-l from-red-700 to-slate-900 px-4 py-2 text-sm font-black text-white shadow-lg shadow-red-900/20">
-          Dexard Video
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <nav className="hidden items-center gap-1 lg:flex">
+            <NavLink href="/" active={pathname === "/"}>{T.home}</NavLink>
+            <NavLink href="/upload" active={pathname.startsWith("/upload")}>{T.upload}</NavLink>
+          </nav>
 
-        <form onSubmit={submitSearch} className="relative flex-1">
+          {authUser ? (
+            <div className="flex items-center gap-2">
+              <Link href="/account" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-black text-white">
+                {initials}
+              </Link>
+              <button onClick={handleLogout} className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
+                {T.logout}
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link href="/auth" className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
+                {T.signin}
+              </Link>
+              <Link href="/auth?mode=signup" className="rounded-full bg-red-700 px-3 py-2 text-xs font-bold text-white shadow-lg shadow-red-900/20">
+                {T.signup}
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={submitSearch} className="relative mr-auto w-full max-w-3xl">
           <input
             value={q}
             onChange={(event) => setQ(event.target.value)}
@@ -144,31 +167,6 @@ export default function Navbar() {
             </div>
           ) : null}
         </form>
-
-        <nav className="hidden items-center gap-1 lg:flex">
-          <NavLink href="/" active={pathname === "/"}>{T.home}</NavLink>
-          <NavLink href="/upload" active={pathname.startsWith("/upload")}>{T.upload}</NavLink>
-        </nav>
-
-        {authUser ? (
-          <div className="flex items-center gap-2">
-            <Link href="/account" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-black text-white">
-              {initials}
-            </Link>
-            <button onClick={handleLogout} className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
-              {T.logout}
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Link href="/auth" className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
-              {T.signin}
-            </Link>
-            <Link href="/auth?mode=signup" className="rounded-full bg-red-700 px-3 py-2 text-xs font-bold text-white shadow-lg shadow-red-900/20">
-              {T.signup}
-            </Link>
-          </div>
-        )}
       </div>
     </header>
   );
