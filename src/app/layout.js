@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
     <html lang="ar" dir="rtl">
       <body className="min-h-screen bg-slate-50 text-slate-900">
         <Navbar />
-        <main className="min-h-screen pt-24">{children}</main>
+        <main className="min-h-screen pt-24 sm:pt-24">{children}</main>
         <Footer />
       </body>
     </html>
