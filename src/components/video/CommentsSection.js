@@ -1,17 +1,34 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { formatArabicDate } from "@/lib/video/format";
 
 const T = {
-  user: "\u0645\u0633\u062a\u062e\u062f\u0645",
-  title: "\u0627\u0644\u062a\u0639\u0644\u064a\u0642\u0627\u062a",
-  bodyPlaceholder: "\u0627\u0643\u062a\u0628 \u062a\u0639\u0644\u064a\u0642\u0643 \u0647\u0646\u0627",
-  parentPlaceholder: "\u0645\u0639\u0631\u0651\u0641 \u062a\u0639\u0644\u064a\u0642 \u0644\u0644\u0631\u062f (\u0627\u062e\u062a\u064a\u0627\u0631\u064a)",
-  post: "\u0646\u0634\u0631 \u0627\u0644\u062a\u0639\u0644\u064a\u0642",
-  needAuth: "\u0633\u062c\u0651\u0644 \u0627\u0644\u062f\u062e\u0648\u0644 \u0644\u0625\u0636\u0627\u0641\u0629 \u062a\u0639\u0644\u064a\u0642",
-  empty: "\u0644\u0627 \u062a\u0648\u062c\u062f \u062a\u0639\u0644\u064a\u0642\u0627\u062a \u0628\u0639\u062f",
+  user: "مستخدم",
+  title: "التعليقات",
+  bodyPlaceholder: "اكتب تعليقك هنا",
+  parentPlaceholder: "معرّف تعليق للرد (اختياري)",
+  post: "نشر التعليق",
+  needAuth: "سجّل الدخول لإضافة تعليق",
+  empty: "لا توجد تعليقات بعد",
+  newest: "الأحدث",
+  oldest: "الأقدم",
+  top: "الأكثر تفاعلًا",
 };
+
+const SORTS = [
+  { key: "latest", label: T.newest },
+  { key: "oldest", label: T.oldest },
+  { key: "top", label: T.top },
+];
+
+function SortIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M3.75 6h3.75m3 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM19.5 12h.75m-16.5 0h9.75m0 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM10.5 18h9.75m-16.5 0h3.75m3 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+    </svg>
+  );
+}
 
 function CommentItem({ item }) {
   return (
@@ -30,18 +47,22 @@ export default function CommentsSection({ videoId, accessToken }) {
   const [items, setItems] = useState([]);
   const [body, setBody] = useState("");
   const [parentId, setParentId] = useState("");
+  const [sort, setSort] = useState("latest");
   const [loading, setLoading] = useState(false);
 
-  async function loadComments() {
-    const response = await fetch(`/api/videos/${videoId}/comments`);
-    if (!response.ok) return;
-    const payload = await response.json();
-    setItems(payload.items || []);
-  }
+  const loadComments = useCallback(
+    async (activeSort = sort) => {
+      const response = await fetch(`/api/videos/${videoId}/comments?sort=${encodeURIComponent(activeSort)}`);
+      if (!response.ok) return;
+      const payload = await response.json();
+      setItems(payload.items || []);
+    },
+    [videoId, sort]
+  );
 
   useEffect(() => {
-    loadComments();
-  }, [videoId]);
+    loadComments(sort);
+  }, [loadComments, sort]);
 
   async function submitComment(event) {
     event.preventDefault();
@@ -56,7 +77,7 @@ export default function CommentsSection({ videoId, accessToken }) {
       if (!response.ok) return;
       setBody("");
       setParentId("");
-      await loadComments();
+      await loadComments(sort);
     } finally {
       setLoading(false);
     }
@@ -64,7 +85,28 @@ export default function CommentsSection({ videoId, accessToken }) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-black text-slate-900">{T.title}</h2>
+      <div className="flex items-center justify-between gap-3">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2 py-1">
+          <SortIcon />
+          <div className="flex items-center gap-1">
+            {SORTS.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => setSort(option.key)}
+                className={[
+                  "rounded-full px-2.5 py-1 text-xs font-medium transition",
+                  sort === option.key ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                ].join(" ")}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <h2 className="text-lg font-black text-slate-900">{T.title}</h2>
+      </div>
 
       <form onSubmit={submitComment} className="space-y-2 rounded-2xl border border-slate-200 bg-white p-4">
         <textarea value={body} onChange={(event) => setBody(event.target.value)} placeholder={T.bodyPlaceholder} rows={4} className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-red-300" />

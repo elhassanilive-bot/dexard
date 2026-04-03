@@ -5,6 +5,9 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import ReactionBar from "@/components/video/ReactionBar";
 import CommentsSection from "@/components/video/CommentsSection";
 import SubscribeButton from "@/components/video/SubscribeButton";
+import SavedVideoButton from "@/components/video/SavedVideoButton";
+import CopyVideoLinkButton from "@/components/video/CopyVideoLinkButton";
+import DownloadVideoButton from "@/components/video/DownloadVideoButton";
 
 export default function VideoEngagementClient({ videoId, channelUsername, likesCount, dislikesCount, userReaction, isSubscribed, subscribersCount }) {
   const [accessToken, setAccessToken] = useState("");
@@ -28,13 +31,18 @@ export default function VideoEngagementClient({ videoId, channelUsername, likesC
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-        <ReactionBar
-          videoId={videoId}
-          initialLike={likesCount}
-          initialDislike={dislikesCount}
-          initialReaction={userReaction}
-          accessToken={accessToken}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <ReactionBar
+            videoId={videoId}
+            initialLike={likesCount}
+            initialDislike={dislikesCount}
+            initialReaction={userReaction}
+            accessToken={accessToken}
+          />
+          <SavedVideoButton videoId={videoId} accessToken={accessToken} />
+          <CopyVideoLinkButton videoId={videoId} accessToken={accessToken} />
+          <DownloadVideoButton videoId={videoId} accessToken={accessToken} />
+        </div>
         <SubscribeButton
           username={channelUsername}
           initialSubscribed={isSubscribed}

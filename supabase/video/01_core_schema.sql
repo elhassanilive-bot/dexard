@@ -62,3 +62,11 @@ create index if not exists idx_videos_created_at on public.videos (created_at de
 create index if not exists idx_videos_views on public.videos (views_count desc);
 create index if not exists idx_videos_channel on public.videos (channel_username);
 create index if not exists idx_video_comments_video on public.video_comments (video_id, created_at);
+create table if not exists public.saved_videos (
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  video_id uuid not null references public.videos(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, video_id)
+);
+
+create index if not exists idx_saved_videos_user_created on public.saved_videos (user_id, created_at desc);

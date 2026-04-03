@@ -1,9 +1,10 @@
-﻿-- 03_rls_policies.sql
+-- 03_rls_policies.sql
 alter table public.profiles enable row level security;
 alter table public.videos enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.video_reactions enable row level security;
 alter table public.video_comments enable row level security;
+alter table public.saved_videos enable row level security;
 
 drop policy if exists "profiles_select_all" on public.profiles;
 create policy "profiles_select_all" on public.profiles for select using (true);
@@ -55,3 +56,12 @@ create policy "comments_update_self" on public.video_comments for update using (
 
 drop policy if exists "comments_delete_self" on public.video_comments;
 create policy "comments_delete_self" on public.video_comments for delete using (auth.uid() = user_id);
+
+drop policy if exists "saved_videos_select_self" on public.saved_videos;
+create policy "saved_videos_select_self" on public.saved_videos for select using (auth.uid() = user_id);
+
+drop policy if exists "saved_videos_insert_self" on public.saved_videos;
+create policy "saved_videos_insert_self" on public.saved_videos for insert with check (auth.uid() = user_id);
+
+drop policy if exists "saved_videos_delete_self" on public.saved_videos;
+create policy "saved_videos_delete_self" on public.saved_videos for delete using (auth.uid() = user_id);
