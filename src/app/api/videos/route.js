@@ -1,6 +1,7 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { FEED_PAGE_SIZE } from "@/lib/video/constants";
-import { getSupabaseServerClient, getAuthUserFromRequest } from "@/lib/video/supabaseServer";
+import { listVideos } from "@/lib/video/queries";
+import { getAuthUserFromRequest } from "@/lib/video/supabaseServer";
 import { slugifyUsername } from "@/lib/video/format";
 
 export async function GET(request) {
@@ -11,29 +12,10 @@ export async function GET(request) {
   const channel = url.searchParams.get("channel") || "";
   const page = Math.max(1, Number.parseInt(url.searchParams.get("page") || "1", 10));
 
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return NextResponse.json({ error: "Supabase is not configured" }, { status: 500 });
+  const { videos, total, error } = await listVideos({ q, filter, category, channel, page });
+  if (error) return NextResponse.json({ error }, { status: 500 });
 
-  const from = (page - 1) * FEED_PAGE_SIZE;
-  const to = from + FEED_PAGE_SIZE - 1;
-
-  let query = supabase
-    .from("videos")
-    .select("id,title,description,category,duration_sec,views_count,created_at,thumbnail_path,user_id,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)", { count: "exact" })
-    .eq("status", "published");
-
-  if (q.trim()) query = query.ilike("title", `%${q.trim()}%`);
-  if (category.trim()) query = query.eq("category", category.trim());
-  if (channel.trim()) query = query.eq("channel_username", channel.trim());
-
-  if (filter === "most_viewed") query = query.order("views_count", { ascending: false }).order("created_at", { ascending: false });
-  else if (filter === "trending") query = query.order("likes_count", { ascending: false }).order("views_count", { ascending: false });
-  else query = query.order("created_at", { ascending: false });
-
-  const { data, count, error } = await query.range(from, to);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  return NextResponse.json({ items: data || [], total: count || 0, page, pageSize: FEED_PAGE_SIZE });
+  return NextResponse.json({ items: videos || [], total: total || 0, page, pageSize: FEED_PAGE_SIZE });
 }
 
 export async function POST(request) {

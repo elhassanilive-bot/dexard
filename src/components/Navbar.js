@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 const T = {
+  menu: "\u0627\u0644\u0642\u0627\u0626\u0645\u0629",
   home: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
   upload: "\u0631\u0641\u0639 \u0641\u064a\u062f\u064a\u0648",
   profile: "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
@@ -16,51 +17,54 @@ const T = {
 
 function HomeGlyph({ active }) {
   return (
-    <span
-      className={[
-        "inline-flex h-7 w-7 items-center justify-center rounded-xl border transition",
-        active ? "border-white/20 bg-white/10" : "border-slate-700 bg-slate-800/80",
-      ].join(" ")}
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-4 w-4">
-        <path d="M3 11.5 12 4l9 7.5" />
-        <path d="M6.5 10.5V20h11V10.5" />
-      </svg>
-    </span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={["h-6 w-6", active ? "text-slate-950" : "text-slate-700"].join(" ")}>
+      <path d="M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z" />
+      <path d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+    </svg>
+  );
+}
+
+function MenuGlyph({ active }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={["h-6 w-6", active ? "text-slate-950" : "text-slate-700"].join(" ")}>
+      <path
+        fillRule="evenodd"
+        d="M3 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 5.25Zm0 4.5A.75.75 0 0 1 3.75 9h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 9.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z"
+        clipRule="evenodd"
+      />
+    </svg>
   );
 }
 
 function UploadGlyph({ active }) {
   return (
-    <span
-      className={[
-        "inline-flex h-7 w-7 items-center justify-center rounded-xl border transition",
-        active ? "border-white/20 bg-white/10" : "border-slate-700 bg-slate-800/80",
-      ].join(" ")}
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-4 w-4">
-        <rect x="3.5" y="6" width="17" height="12" rx="2.5" />
-        <path d="M11 10v5" />
-        <path d="m8.8 12.2 2.2-2.2 2.2 2.2" />
-      </svg>
-    </span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={["h-6 w-6", active ? "text-slate-950" : "text-slate-700"].join(" ")}>
+      <path d="M9.97.97a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1-1.06 1.06l-1.72-1.72v3.44h-1.5V3.31L8.03 5.03a.75.75 0 0 1-1.06-1.06l3-3ZM9.75 6.75v6a.75.75 0 0 0 1.5 0v-6h3a3 3 0 0 1 3 3v7.5a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3h3Z" />
+      <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+    </svg>
   );
 }
 
-function NavLink({ href, active, icon, children }) {
+function IconWithLabel({ href, label, ariaLabel, title, children }) {
   return (
     <Link
       href={href}
-      className={[
-        "group flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-extrabold transition",
-        active
-          ? "border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-[0_10px_26px_-15px_rgba(15,23,42,0.9)]"
-          : "border-slate-300 bg-slate-100 text-slate-700 hover:border-slate-500 hover:bg-slate-800 hover:text-white",
-      ].join(" ")}
+      aria-label={ariaLabel}
+      title={title}
+      className="inline-flex items-center justify-center gap-1.5 px-1"
     >
-      {icon}
       {children}
+      <span className="text-[10px] font-medium leading-none tracking-tight text-slate-500">{label}</span>
     </Link>
+  );
+}
+
+function IconButtonWithLabel({ label, ariaLabel, title, onClick, children }) {
+  return (
+    <button type="button" aria-label={ariaLabel} title={title} onClick={onClick} className="inline-flex items-center justify-center gap-1.5 px-1">
+      {children}
+      <span className="text-[10px] font-medium leading-none tracking-tight text-slate-500">{label}</span>
+    </button>
   );
 }
 
@@ -155,41 +159,51 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:px-6 lg:px-8">
         <div className="flex shrink-0 items-center gap-2">
-          <nav className="hidden items-center gap-1 lg:flex">
-            <NavLink href="/" active={pathname === "/"} icon={<HomeGlyph active={pathname === "/"} />}>
-              {T.home}
-            </NavLink>
-            <NavLink href="/upload" active={pathname.startsWith("/upload")} icon={<UploadGlyph active={pathname.startsWith("/upload")} />}>
-              {T.upload}
-            </NavLink>
+          <nav className="hidden items-center gap-3 lg:flex">
+            <IconButtonWithLabel label={T.menu} ariaLabel={T.menu} title={T.menu} onClick={() => {}}>
+              <MenuGlyph active={false} />
+            </IconButtonWithLabel>
+            <IconWithLabel href="/" label={T.home} ariaLabel={T.home} title={T.home}>
+              <HomeGlyph active={pathname === "/"} />
+            </IconWithLabel>
+            <IconWithLabel href="/upload" label={T.upload} ariaLabel={T.upload} title={T.upload}>
+              <UploadGlyph active={pathname.startsWith("/upload")} />
+            </IconWithLabel>
           </nav>
 
           {authUser ? (
-            <Link
+            <IconWithLabel
               href="/account"
-              aria-label={T.profile}
+              label={T.guestAccount}
+              ariaLabel={T.profile}
               title={T.profile}
-              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-900 text-sm font-black text-white shadow-sm ring-2 ring-white transition hover:scale-[1.03]"
             >
-              {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={avatarUrl} alt={T.profile} className="h-full w-full object-cover" />
-              ) : (
-                initials
-              )}
-            </Link>
+              <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-sm font-black text-slate-900">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt={T.profile} className="h-full w-full object-cover" />
+                ) : (
+                  initials
+                )}
+              </span>
+            </IconWithLabel>
           ) : (
-            <Link
+            <IconWithLabel
               href="/auth"
-              aria-label={T.guestAccount}
+              label={T.guestAccount}
+              ariaLabel={T.guestAccount}
               title={T.guestAccount}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-slate-900 text-white shadow-sm ring-2 ring-white transition hover:scale-[1.03]"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20a8 8 0 0 1 16 0" />
-              </svg>
-            </Link>
+              <span className="inline-flex h-11 w-11 items-center justify-center text-slate-900">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+                  <path
+                    fillRule="evenodd"
+                    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </IconWithLabel>
           )}
         </div>
 
