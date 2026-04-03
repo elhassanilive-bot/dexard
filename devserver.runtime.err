@@ -1,0 +1,1 @@
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: EPERM: operation not permitted, rename 'c:\D - Project-Web\Dexard-Web\.next\dev\cache\webpack\client-development\6.pack.gz_' -> 'c:\D - Project-Web\Dexard-Web\.next\dev\cache\webpack\client-development\6.pack.gz'

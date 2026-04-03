@@ -30,6 +30,7 @@ export default function InfiniteVideoFeed({
   const [page, setPage] = useState(initialPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
   const sentinelRef = useRef(null);
 
   const hasMore = useMemo(() => page * FEED_PAGE_SIZE < total, [page, total]);
@@ -39,6 +40,7 @@ export default function InfiniteVideoFeed({
     setPage(initialPage);
     setIsLoadingMore(false);
     setHasError(false);
+    setRetryTick(0);
   }, [initialVideos, initialPage, q, filter, category, channel]);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function InfiniteVideoFeed({
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hasMore, isLoadingMore, page, q, filter, category, channel]);
+  }, [hasMore, isLoadingMore, page, q, filter, category, channel, retryTick]);
 
   return (
     <section className="space-y-4">
@@ -91,7 +93,7 @@ export default function InfiniteVideoFeed({
       <div ref={sentinelRef} className="flex min-h-14 items-center justify-center">
         {isLoadingMore ? <span className="text-xs text-slate-500">{T.loading}</span> : null}
         {!isLoadingMore && hasError ? (
-          <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} className="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-600">
+          <button type="button" onClick={() => setRetryTick((v) => v + 1)} className="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-600">
             {T.failed}
           </button>
         ) : null}

@@ -51,7 +51,7 @@ function IconWithLabel({ href, label, ariaLabel, title, children }) {
       href={href}
       aria-label={ariaLabel}
       title={title}
-      className="inline-flex items-center justify-center gap-1.5 px-1"
+      className="inline-flex shrink-0 items-center justify-center gap-1.5 px-1"
     >
       {children}
       <span className="text-[10px] font-medium leading-none tracking-tight text-slate-500">{label}</span>
@@ -61,7 +61,7 @@ function IconWithLabel({ href, label, ariaLabel, title, children }) {
 
 function IconButtonWithLabel({ label, ariaLabel, title, onClick, children }) {
   return (
-    <button type="button" aria-label={ariaLabel} title={title} onClick={onClick} className="inline-flex items-center justify-center gap-1.5 px-1">
+    <button type="button" aria-label={ariaLabel} title={title} onClick={onClick} className="inline-flex shrink-0 items-center justify-center gap-1.5 px-1">
       {children}
       <span className="text-[10px] font-medium leading-none tracking-tight text-slate-500">{label}</span>
     </button>
@@ -157,57 +157,8 @@ export default function Navbar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:px-6 lg:px-8">
-        <div className="flex shrink-0 items-center gap-2">
-          <nav className="hidden items-center gap-3 lg:flex">
-            <IconButtonWithLabel label={T.menu} ariaLabel={T.menu} title={T.menu} onClick={() => {}}>
-              <MenuGlyph active={false} />
-            </IconButtonWithLabel>
-            <IconWithLabel href="/" label={T.home} ariaLabel={T.home} title={T.home}>
-              <HomeGlyph active={pathname === "/"} />
-            </IconWithLabel>
-            <IconWithLabel href="/upload" label={T.upload} ariaLabel={T.upload} title={T.upload}>
-              <UploadGlyph active={pathname.startsWith("/upload")} />
-            </IconWithLabel>
-          </nav>
-
-          {authUser ? (
-            <IconWithLabel
-              href="/account"
-              label={T.guestAccount}
-              ariaLabel={T.profile}
-              title={T.profile}
-            >
-              <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-sm font-black text-slate-900">
-                {avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={avatarUrl} alt={T.profile} className="h-full w-full object-cover" />
-                ) : (
-                  initials
-                )}
-              </span>
-            </IconWithLabel>
-          ) : (
-            <IconWithLabel
-              href="/auth"
-              label={T.guestAccount}
-              ariaLabel={T.guestAccount}
-              title={T.guestAccount}
-            >
-              <span className="inline-flex h-11 w-11 items-center justify-center text-slate-900">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
-                  <path
-                    fillRule="evenodd"
-                    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
-            </IconWithLabel>
-          )}
-        </div>
-
-        <form onSubmit={submitSearch} className="relative mr-auto w-full max-w-3xl">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-3 py-3 sm:px-6 lg:px-8">
+        <form onSubmit={submitSearch} className="relative w-full lg:mr-auto lg:max-w-3xl">
           <input
             value={q}
             onChange={(event) => setQ(event.target.value)}
@@ -233,6 +184,43 @@ export default function Navbar() {
             </div>
           ) : null}
         </form>
+
+        <nav className="flex items-center gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <IconButtonWithLabel label={T.menu} ariaLabel={T.menu} title={T.menu} onClick={() => {}}>
+            <MenuGlyph active={false} />
+          </IconButtonWithLabel>
+          <IconWithLabel href="/" label={T.home} ariaLabel={T.home} title={T.home}>
+            <HomeGlyph active={pathname === "/"} />
+          </IconWithLabel>
+          <IconWithLabel href="/upload" label={T.upload} ariaLabel={T.upload} title={T.upload}>
+            <UploadGlyph active={pathname.startsWith("/upload")} />
+          </IconWithLabel>
+
+          {authUser ? (
+            <IconWithLabel href="/account" label={T.guestAccount} ariaLabel={T.profile} title={T.profile}>
+              <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full text-sm font-black text-slate-900">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt={T.profile} className="h-full w-full object-cover" />
+                ) : (
+                  initials
+                )}
+              </span>
+            </IconWithLabel>
+          ) : (
+            <IconWithLabel href="/auth" label={T.guestAccount} ariaLabel={T.guestAccount} title={T.guestAccount}>
+              <span className="inline-flex h-11 w-11 items-center justify-center text-slate-900">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+                  <path
+                    fillRule="evenodd"
+                    d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </IconWithLabel>
+          )}
+        </nav>
       </div>
     </header>
   );
