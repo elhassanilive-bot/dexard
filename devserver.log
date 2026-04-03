@@ -1,0 +1,309 @@
+
+> dribdoweb@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.89.130:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · cpus: 1
+
+✓ Starting...
+Creating turbopack project { dir: 'C:\\dribdoweb', testMode: true }
+✓ Ready in 12.9s
+○ Compiling / ...
+ GET / 200 in 24.7s (compile: 20.5s, render: 4.2s)
+✓ Compiled in 2.7s
+✓ Compiled in 1246ms
+ GET / 200 in 2.3s (compile: 1239ms, render: 1082ms)
+ GET / 200 in 6.8s (compile: 616ms, render: 6.2s)
+✓ Compiled in 3.7s
+ GET / 200 in 3.8s (compile: 1335ms, render: 2.5s)
+✓ Compiled in 4.4s
+ GET / 200 in 11.7s (compile: 8.5s, render: 3.1s)
+✓ Compiled in 1217ms
+✓ Compiled in 2.2s
+ GET / 200 in 13.4s (compile: 9.5s, render: 3.8s)
+✓ Compiled in 614ms
+✓ Finished filesystem cache database compaction in 20.8s
+ GET / 200 in 42s (compile: 9.2s, render: 32.9s)
+✓ Compiled in 3.1s
+ GET / 200 in 28.9s (compile: 8.5s, render: 20.3s)
+ GET / 200 in 3.2min (compile: 23.2s, render: 2.8min)
+✓ Finished writing to filesystem cache in 20.1s
+ GET / 200 in 23.9s (compile: 1622ms, render: 22.3s)
+✓ Compiled in 3.5s
+ GET / 200 in 16.8s (compile: 12.7s, render: 4.1s)
+✓ Compiled in 409ms
+ GET / 500 in 4.4s (compile: 1552ms, render: 2.8s)
+✓ Compiled in 1044ms
+✓ Compiled in 369ms
+✓ Compiled in 432ms
+ GET / 200 in 22.1s (compile: 5.1s, render: 17.0s)
+✓ Compiled in 1402ms
+ GET / 200 in 61s (compile: 42s, render: 19.5s)
+○ Compiling /privacy ...
+ GET /privacy 200 in 68s (compile: 66s, render: 1366ms)
+○ Compiling /terms ...
+ GET /terms 200 in 32.9s (compile: 23.1s, render: 9.8s)
+○ Compiling /about ...
+ GET /about 200 in 14.2s (compile: 12.4s, render: 1792ms)
+○ Compiling /contact ...
+ GET /contact 200 in 13.2s (compile: 11.0s, render: 2.2s)
+✓ Compiled in 1229ms
+✓ Compiled in 481ms
+✓ Compiled in 543ms
+✓ Compiled in 545ms
+✓ Compiled in 698ms
+✓ Compiled in 1514ms
+✓ Compiled in 779ms
+✓ Compiled in 553ms
+✓ Compiled in 572ms
+✓ Compiled in 685ms
+✓ Compiled in 491ms
+✓ Compiled in 332ms
+✓ Compiled in 1916ms
+ GET /contact 200 in 75s (compile: 63s, render: 12.3s)
+ GET /contact 200 in 101s (compile: 37.5s, render: 63s)
+✓ Finished filesystem cache database compaction in 17.0s
+○ Compiling /agreements ...
+✓ Finished writing to filesystem cache in 19.0s
+✓ Finished filesystem cache database compaction in 24.6s
+ GET /agreements 200 in 11.0s (compile: 5.3s, render: 5.7s)
+ GET /agreements 200 in 3.1min (compile: 76s, render: 111s)
+○ Compiling /faq ...
+✓ Finished writing to filesystem cache in 16.6s
+✓ Finished writing to filesystem cache in 12.4s
+ GET /faq 200 in 4.9min (compile: 4.6min, render: 19.1s)
+✓ Compiled in 7.5s
+✓ Finished filesystem cache database compaction in 17.3s
+ GET /faq 200 in 1399ms (compile: 198ms, render: 1201ms)
+✓ Compiled in 2.6s
+ GET / 200 in 10.7s (compile: 5.7s, render: 5.0s)
+○ Compiling /features ...
+ GET /features 200 in 59s (compile: 52s, render: 6.8s)
+✓ Finished writing to filesystem cache in 16.9s
+✓ Finished filesystem cache database compaction in 25.6s
+✓ Compiled in 1719ms
+✓ Finished writing to filesystem cache in 15.1s
+✓ Compiled in 1365ms
+ GET /features 200 in 3.8s (compile: 3.0s, render: 836ms)
+ GET /features 200 in 858ms (compile: 9ms, render: 849ms)
+ GET /features 200 in 3.9s (compile: 22ms, render: 3.9s)
+ GET /features 200 in 1099ms (compile: 356ms, render: 743ms)
+ GET /features 200 in 3.9s (compile: 20ms, render: 3.9s)
+ GET /features 200 in 4.1s (compile: 634ms, render: 3.4s)
+✓ Compiled in 1369ms
+ GET /features 200 in 11.7s (compile: 9.1s, render: 2.6s)
+ GET /features 200 in 11.3s (compile: 7.6s, render: 3.7s)
+✓ Compiled in 19.1s
+○ Compiling /features ...
+ GET /features 200 in 51s (compile: 42s, render: 9.1s)
+✓ Finished writing to filesystem cache in 10.2s
+✓ Compiled in 1813ms
+✓ Finished filesystem cache database compaction in 10.6s
+✓ Finished writing to filesystem cache in 20.9s
+ GET /features 200 in 66s (compile: 25.6s, render: 40s)
+ GET /features 200 in 20.8s (compile: 425ms, render: 20.4s)
+ GET /features 200 in 20.7s (compile: 5.0s, render: 15.7s)
+ GET /features 200 in 23.9s (compile: 8.4s, render: 15.6s)
+ GET /features 200 in 24.0s (compile: 10.1s, render: 13.8s)
+ GET /features 200 in 24.0s (compile: 11.1s, render: 13.0s)
+ GET /features 200 in 25.8s (compile: 136ms, render: 25.7s)
+ GET /features 200 in 22.0s (compile: 1317ms, render: 20.6s)
+ GET /features 200 in 22.0s (compile: 6.8s, render: 15.2s)
+ GET /features 200 in 21.8s (compile: 13.3s, render: 8.6s)
+ GET /features 200 in 21.8s (compile: 16.2s, render: 5.6s)
+ GET /features 200 in 22.0s (compile: 9.2s, render: 12.8s)
+ GET /features 200 in 29.0s (compile: 400ms, render: 28.6s)
+ GET /features 200 in 27.0s (compile: 3.2s, render: 23.8s)
+ GET /features 200 in 27.2s (compile: 7.1s, render: 20.0s)
+ GET /features 200 in 27.3s (compile: 1369ms, render: 25.9s)
+ GET /features 200 in 27.2s (compile: 14.2s, render: 13.0s)
+ GET /features 200 in 27.2s (compile: 19.2s, render: 8.0s)
+ GET /features 200 in 12.2s (compile: 821ms, render: 11.3s)
+ GET /features 200 in 10.2s (compile: 3.0s, render: 7.2s)
+ GET /features 200 in 10.2s (compile: 4.1s, render: 6.0s)
+ GET /features 200 in 10.3s (compile: 1507ms, render: 8.7s)
+ GET /features 200 in 10.2s (compile: 5.3s, render: 4.9s)
+ GET /features 200 in 11.4s (compile: 310ms, render: 11.1s)
+ GET /features 200 in 6.7s (compile: 346ms, render: 6.3s)
+ GET /features 200 in 5.2s (compile: 1217ms, render: 4.0s)
+ GET /features 200 in 5.4s (compile: 262ms, render: 5.1s)
+ GET /features 200 in 6.0s (compile: 2.5s, render: 3.5s)
+ GET /features 200 in 6.0s (compile: 2.1s, render: 3.9s)
+ GET /features 200 in 6.3s (compile: 1784ms, render: 4.5s)
+ GET /features 200 in 6.1s (compile: 165ms, render: 5.9s)
+ GET /features 200 in 5.0s (compile: 188ms, render: 4.8s)
+ GET /features 200 in 5.3s (compile: 407ms, render: 4.9s)
+ GET /features 200 in 5.2s (compile: 1049ms, render: 4.2s)
+ GET /features 200 in 5.2s (compile: 2.5s, render: 2.7s)
+ GET /features 200 in 4.3s (compile: 2.1s, render: 2.2s)
+ GET /features 200 in 5.3s (compile: 119ms, render: 5.1s)
+ GET /features 200 in 4.8s (compile: 96ms, render: 4.7s)
+ GET /features 200 in 4.8s (compile: 676ms, render: 4.2s)
+ GET /features 200 in 5.4s (compile: 1014ms, render: 4.4s)
+ GET /features 200 in 4.4s (compile: 328ms, render: 4.1s)
+ GET /features 200 in 4.8s (compile: 492ms, render: 4.3s)
+ GET /features 200 in 9.0s (compile: 110ms, render: 8.9s)
+ GET /features 200 in 8.7s (compile: 170ms, render: 8.5s)
+ GET /features 200 in 9.5s (compile: 631ms, render: 8.9s)
+ GET /features 200 in 9.0s (compile: 724ms, render: 8.3s)
+ GET /features 200 in 8.4s (compile: 1253ms, render: 7.1s)
+ GET /features 200 in 7.4s (compile: 803ms, render: 6.6s)
+ GET /features 200 in 5.7s (compile: 337ms, render: 5.3s)
+ GET /features 200 in 4.8s (compile: 123ms, render: 4.6s)
+ GET /features 200 in 4.8s (compile: 176ms, render: 4.6s)
+ GET /features 200 in 4.3s (compile: 85ms, render: 4.2s)
+ GET /features 200 in 4.9s (compile: 424ms, render: 4.5s)
+ GET /features 200 in 5.0s (compile: 819ms, render: 4.2s)
+ GET /features 200 in 4.8s (compile: 99ms, render: 4.7s)
+ GET /features 200 in 4.2s (compile: 82ms, render: 4.1s)
+ GET /features 200 in 3.4s (compile: 84ms, render: 3.4s)
+ GET /features 200 in 3.4s (compile: 343ms, render: 3.1s)
+ GET /features 200 in 3.4s (compile: 52ms, render: 3.4s)
+ GET /features 200 in 3.7s (compile: 445ms, render: 3.2s)
+ GET /features 200 in 5.4s (compile: 401ms, render: 5.0s)
+ GET /features 200 in 4.7s (compile: 113ms, render: 4.6s)
+ GET /features 200 in 5.5s (compile: 36ms, render: 5.5s)
+ GET /features 200 in 4.8s (compile: 316ms, render: 4.5s)
+ GET /features 200 in 6.0s (compile: 186ms, render: 5.8s)
+ GET /features 200 in 6.6s (compile: 1016ms, render: 5.6s)
+ GET /features 200 in 5.2s (compile: 99ms, render: 5.1s)
+ GET /features 200 in 4.8s (compile: 1085ms, render: 3.7s)
+ GET /features 200 in 4.8s (compile: 1642ms, render: 3.1s)
+ GET /features 200 in 4.9s (compile: 117ms, render: 4.8s)
+ GET /features 200 in 3.4s (compile: 88ms, render: 3.3s)
+ GET /features 200 in 4.6s (compile: 183ms, render: 4.5s)
+ GET /features 200 in 6.0s (compile: 167ms, render: 5.9s)
+ GET /features 200 in 5.4s (compile: 328ms, render: 5.0s)
+ GET /features 200 in 5.4s (compile: 902ms, render: 4.5s)
+ GET /features 200 in 5.3s (compile: 1230ms, render: 4.1s)
+ GET /features 200 in 4.7s (compile: 113ms, render: 4.6s)
+ GET /features 200 in 5.2s (compile: 138ms, render: 5.1s)
+ GET /features 200 in 3.0s (compile: 247ms, render: 2.7s)
+ GET /features 200 in 1980ms (compile: 166ms, render: 1814ms)
+○ Compiling /about ...
+ GET /about 200 in 23.6s (compile: 19.3s, render: 4.3s)
+✓ Finished writing to filesystem cache in 17.9s
+✓ Compiled in 5.4s
+ GET /about 200 in 10.9s (compile: 6.6s, render: 4.3s)
+○ Compiling /_not-found/page ...
+ GET /about 404 in 29.0s (compile: 18.8s, render: 10.2s)
+ GET /about 404 in 29.3s (compile: 20.8s, render: 8.5s)
+ GET /about 200 in 16.8s (compile: 8.6s, render: 8.2s)
+ GET /about 200 in 16.8s (compile: 9.6s, render: 7.2s)
+ GET /about 200 in 16.8s (compile: 7.3s, render: 9.5s)
+ GET /about 200 in 16.8s (compile: 4.0s, render: 12.8s)
+ GET /about 200 in 16.5s (compile: 11.4s, render: 5.1s)
+ GET /about 200 in 16.6s (compile: 12.1s, render: 4.5s)
+✓ Compiled in 15ms
+✓ Compiled in 762ms
+○ Compiling /download ...
+ GET /download 200 in 24.1s (compile: 14.4s, render: 9.6s)
+ GET /about 200 in 1625ms (compile: 551ms, render: 1074ms)
+✓ Compiled in 976ms
+ GET /about 200 in 521ms (compile: 18ms, render: 503ms)
+ GET /download 200 in 3.5s (compile: 2.4s, render: 1047ms)
+✓ Compiled in 401ms
+ GET /download 200 in 730ms (compile: 535ms, render: 195ms)
+ GET /download 200 in 1364ms (compile: 413ms, render: 951ms)
+ GET /download 200 in 1032ms (compile: 11ms, render: 1021ms)
+✓ Compiled in 491ms
+ GET /download 200 in 892ms (compile: 650ms, render: 242ms)
+ GET /download 200 in 1010ms (compile: 9ms, render: 1000ms)
+ GET /download 200 in 1440ms (compile: 10ms, render: 1430ms)
+ GET /download 200 in 883ms (compile: 28ms, render: 854ms)
+ GET /download 200 in 1236ms (compile: 9ms, render: 1227ms)
+ GET /download 200 in 1399ms (compile: 9ms, render: 1390ms)
+ GET /download 200 in 1066ms (compile: 20ms, render: 1046ms)
+ GET /download 200 in 902ms (compile: 39ms, render: 863ms)
+✓ Compiled in 418ms
+ GET /download 200 in 1063ms (compile: 728ms, render: 335ms)
+✓ Compiled in 400ms
+ GET /download 404 in 1545ms (compile: 387ms, render: 1158ms)
+ GET /download 404 in 918ms (compile: 42ms, render: 876ms)
+ GET /download 404 in 756ms (compile: 34ms, render: 723ms)
+ GET /download 404 in 580ms (compile: 18ms, render: 562ms)
+ GET /download 404 in 363ms (compile: 31ms, render: 332ms)
+ GET /download 404 in 190ms (compile: 31ms, render: 159ms)
+ GET /download 404 in 345ms (compile: 16ms, render: 329ms)
+ GET /download 404 in 356ms (compile: 43ms, render: 313ms)
+ GET /download 404 in 182ms (compile: 18ms, render: 164ms)
+ GET /download 404 in 207ms (compile: 17ms, render: 190ms)
+ GET /download 404 in 348ms (compile: 22ms, render: 325ms)
+ GET /download 404 in 549ms (compile: 34ms, render: 515ms)
+ GET /download 404 in 512ms (compile: 14ms, render: 498ms)
+ GET /download 404 in 178ms (compile: 17ms, render: 161ms)
+ GET /download 404 in 401ms (compile: 20ms, render: 380ms)
+ GET /download 404 in 610ms (compile: 17ms, render: 593ms)
+ GET /download 404 in 390ms (compile: 16ms, render: 373ms)
+ GET /download 404 in 236ms (compile: 50ms, render: 186ms)
+ GET /download 404 in 147ms (compile: 17ms, render: 130ms)
+ GET /download 404 in 440ms (compile: 39ms, render: 400ms)
+ GET /download 404 in 1049ms (compile: 15ms, render: 1034ms)
+ GET /download 200 in 5.5s (compile: 2.8s, render: 2.7s)
+✓ Compiled in 907ms
+ GET /download 200 in 1061ms (compile: 748ms, render: 313ms)
+✓ Compiled in 756ms
+ GET /download 500 in 2.8s (compile: 830ms, render: 2.0s)
+✓ Compiled in 320ms
+ GET /download 500 in 958ms (compile: 521ms, render: 437ms)
+ GET /download 404 in 1342ms (compile: 485ms, render: 858ms)
+ GET /download 404 in 2.2s (compile: 1160ms, render: 1024ms)
+ GET /download 404 in 821ms (compile: 373ms, render: 448ms)
+ GET /download 404 in 1014ms (compile: 48ms, render: 966ms)
+ GET /download 404 in 1248ms (compile: 28ms, render: 1220ms)
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.89.130:3000
+- Environments: .env.local
+- Experiments (use with caution):
+  · cpus: 1
+
+✓ Starting...
+Creating turbopack project { dir: 'C:\\dribdoweb', testMode: true }
+✓ Ready in 5.9s
+○ Compiling /download ...
+ GET /download 200 in 425ms (compile: 206ms, render: 219ms)
+ GET /download 200 in 7.4s (compile: 5.2s, render: 2.1s)
+ GET /download 200 in 5.1s (compile: 3.3s, render: 1780ms)
+✓ Compiled in 3.3s
+✓ Compiled in 908ms
+ GET /download 200 in 1707ms (compile: 1195ms, render: 513ms)
+ GET /download 200 in 6.9s (compile: 821ms, render: 6.1s)
+✓ Compiled in 651ms
+ GET /download 200 in 940ms (compile: 632ms, render: 307ms)
+✓ Compiled in 615ms
+ GET /download 200 in 3.8s (compile: 2.5s, render: 1320ms)
+✓ Compiled in 370ms
+ GET /download 200 in 1043ms (compile: 671ms, render: 372ms)
+✓ Compiled in 701ms
+ GET /download 500 in 2.4s (compile: 652ms, render: 1794ms)
+✓ Compiled in 418ms
+ GET /download 200 in 2.1s (compile: 1033ms, render: 1082ms)
+✓ Compiled in 224ms
+ GET /download 200 in 843ms (compile: 466ms, render: 377ms)
+✓ Compiled in 362ms
+ GET /download 200 in 1367ms (compile: 684ms, render: 683ms)
+✓ Compiled in 357ms
+ GET /download 200 in 2.9s (compile: 1199ms, render: 1685ms)
+✓ Compiled in 416ms
+ GET /download 200 in 1283ms (compile: 797ms, render: 486ms)
+ GET /privacy 200 in 5.4s (compile: 4.0s, render: 1446ms)
+✓ Compiled in 1495ms
+✓ Compiled in 1528ms
+✓ Compiled in 272ms
+ GET /privacy 200 in 11.0s (compile: 5.6s, render: 5.4s)
+ GET /privacy 200 in 11.0s (compile: 3.6s, render: 7.3s)
+ GET /terms 200 in 3.5s (compile: 2.1s, render: 1442ms)
+ GET /privacy 200 in 932ms (compile: 498ms, render: 433ms)
+ GET /terms 200 in 3.0s (compile: 971ms, render: 2.0s)
+ GET /agreements 200 in 8.8s (compile: 6.2s, render: 2.6s)
+ GET / 200 in 12.2s (compile: 6.6s, render: 5.6s)
+ GET /terms 200 in 3.9s (compile: 929ms, render: 3.0s)
+ GET /terms 200 in 2.5s (compile: 590ms, render: 1943ms)
+ GET /terms 200 in 5.5s (compile: 258ms, render: 5.3s)
+ GET /privacy 200 in 5.6s (compile: 929ms, render: 4.7s)
+ GET /terms 200 in 4.2s (compile: 588ms, render: 3.6s)
