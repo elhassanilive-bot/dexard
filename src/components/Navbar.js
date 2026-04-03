@@ -8,22 +8,57 @@ import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 const T = {
   home: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
   upload: "\u0631\u0641\u0639 \u0641\u064a\u062f\u064a\u0648",
-  signin: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062f\u062e\u0648\u0644",
-  signup: "\u0625\u0646\u0634\u0627\u0621 \u062d\u0633\u0627\u0628",
-  logout: "\u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c",
+  profile: "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
+  guestAccount: "\u0627\u0644\u062d\u0633\u0627\u0628",
   searchPlaceholder: "\u0627\u0628\u062d\u062b \u0639\u0646 \u0641\u064a\u062f\u064a\u0648 \u0623\u0648 \u0642\u0646\u0627\u0629",
   search: "\u0628\u062d\u062b",
 };
 
-function NavLink({ href, active, children }) {
+function HomeGlyph({ active }) {
+  return (
+    <span
+      className={[
+        "inline-flex h-7 w-7 items-center justify-center rounded-xl border transition",
+        active ? "border-white/20 bg-white/10" : "border-slate-700 bg-slate-800/80",
+      ].join(" ")}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-4 w-4">
+        <path d="M3 11.5 12 4l9 7.5" />
+        <path d="M6.5 10.5V20h11V10.5" />
+      </svg>
+    </span>
+  );
+}
+
+function UploadGlyph({ active }) {
+  return (
+    <span
+      className={[
+        "inline-flex h-7 w-7 items-center justify-center rounded-xl border transition",
+        active ? "border-white/20 bg-white/10" : "border-slate-700 bg-slate-800/80",
+      ].join(" ")}
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-4 w-4">
+        <rect x="3.5" y="6" width="17" height="12" rx="2.5" />
+        <path d="M11 10v5" />
+        <path d="m8.8 12.2 2.2-2.2 2.2 2.2" />
+      </svg>
+    </span>
+  );
+}
+
+function NavLink({ href, active, icon, children }) {
   return (
     <Link
       href={href}
       className={[
-        "rounded-full px-4 py-2 text-sm font-extrabold transition",
-        active ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100",
+        "group flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-extrabold transition",
+        active
+          ? "border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 text-white shadow-[0_10px_26px_-15px_rgba(15,23,42,0.9)]"
+          : "border-slate-300 bg-slate-100 text-slate-700 hover:border-slate-500 hover:bg-slate-800 hover:text-white",
       ].join(" ")}
     >
+      {icon}
       {children}
     </Link>
   );
@@ -32,9 +67,10 @@ function NavLink({ href, active, children }) {
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-    const [q, setQ] = useState("");
+  const [q, setQ] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [authUser, setAuthUser] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -45,6 +81,16 @@ export default function Navbar() {
   useEffect(() => {
     let mounted = true;
 
+    async function syncAvatar(supabase, user) {
+      if (!user) {
+        if (mounted) setAvatarUrl("");
+        return;
+      }
+      const fallbackAvatar = user.user_metadata?.avatar_url || "";
+      const { data: profile } = await supabase.from("profiles").select("avatar_url").eq("id", user.id).maybeSingle();
+      if (mounted) setAvatarUrl(profile?.avatar_url || fallbackAvatar || "");
+    }
+
     async function bindAuth() {
       if (!isSupabaseConfigured()) return;
       const supabase = await getSupabaseClient();
@@ -52,9 +98,11 @@ export default function Navbar() {
 
       const { data } = await supabase.auth.getSession();
       if (mounted) setAuthUser(data?.session?.user || null);
+      await syncAvatar(supabase, data?.session?.user || null);
 
       const state = supabase.auth.onAuthStateChange((_event, session) => {
         if (mounted) setAuthUser(session?.user || null);
+        syncAvatar(supabase, session?.user || null);
       });
 
       return () => state.data.subscription.unsubscribe();
@@ -93,14 +141,6 @@ export default function Navbar() {
     return String(source).trim().slice(0, 1).toUpperCase();
   }, [authUser]);
 
-  async function handleLogout() {
-    const supabase = await getSupabaseClient();
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  }
-
   function submitSearch(event) {
     event.preventDefault();
     const term = q.trim();
@@ -116,28 +156,40 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:px-6 lg:px-8">
         <div className="flex shrink-0 items-center gap-2">
           <nav className="hidden items-center gap-1 lg:flex">
-            <NavLink href="/" active={pathname === "/"}>{T.home}</NavLink>
-            <NavLink href="/upload" active={pathname.startsWith("/upload")}>{T.upload}</NavLink>
+            <NavLink href="/" active={pathname === "/"} icon={<HomeGlyph active={pathname === "/"} />}>
+              {T.home}
+            </NavLink>
+            <NavLink href="/upload" active={pathname.startsWith("/upload")} icon={<UploadGlyph active={pathname.startsWith("/upload")} />}>
+              {T.upload}
+            </NavLink>
           </nav>
 
           {authUser ? (
-            <div className="flex items-center gap-2">
-              <Link href="/account" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-black text-white">
-                {initials}
-              </Link>
-              <button onClick={handleLogout} className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
-                {T.logout}
-              </button>
-            </div>
+            <Link
+              href="/account"
+              aria-label={T.profile}
+              title={T.profile}
+              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-900 text-sm font-black text-white shadow-sm ring-2 ring-white transition hover:scale-[1.03]"
+            >
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt={T.profile} className="h-full w-full object-cover" />
+              ) : (
+                initials
+              )}
+            </Link>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/auth" className="rounded-full border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700">
-                {T.signin}
-              </Link>
-              <Link href="/auth?mode=signup" className="rounded-full bg-red-700 px-3 py-2 text-xs font-bold text-white shadow-lg shadow-red-900/20">
-                {T.signup}
-              </Link>
-            </div>
+            <Link
+              href="/auth"
+              aria-label={T.guestAccount}
+              title={T.guestAccount}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-slate-900 text-white shadow-sm ring-2 ring-white transition hover:scale-[1.03]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20a8 8 0 0 1 16 0" />
+              </svg>
+            </Link>
           )}
         </div>
 
@@ -153,7 +205,7 @@ export default function Navbar() {
           </button>
 
           {suggestions.length > 0 && q.trim().length >= 2 ? (
-            <div className="absolute right-0 top-14 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            <div className="absolute right-0 top-14 w-full max-h-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
               {suggestions.map((item) => (
                 <Link
                   key={`${item.type}-${item.id}`}
