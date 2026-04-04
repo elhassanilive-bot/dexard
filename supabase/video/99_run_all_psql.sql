@@ -7,3 +7,7 @@
 \i ./04_storage.sql
 \i ./05_saved_videos.sql
 \i ./06_comment_reactions.sql
+\i ./07_avatar_storage.sql
+\i ./08_profile_cover_and_storage.sql
+\i ./09_watch_history.sql
+\i ./10_notifications.sql

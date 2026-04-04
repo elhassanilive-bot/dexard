@@ -2726,3 +2726,169 @@ Caused by:
 Import trace for requested module:
 ./src/components/video/CommentsSection.js
 ./src/components/video/VideoEngagementClient.js
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/watch/dcc03e41-46f8-4a86-8ab5-565307907e07'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+⨯ [Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}
+[Error: EBUSY: resource busy or locked, open 'c:\D - Project-Web\Dexard-Web\.next\dev\server\app\api\videos\[id]\comments\route_client-reference-manifest.js'] {
+  errno: -4082,
+  code: 'EBUSY',
+  syscall: 'open',
+  path: 'c:\\D - Project-Web\\Dexard-Web\\.next\\dev\\server\\app\\api\\videos\\[id]\\comments\\route_client-reference-manifest.js'
+}

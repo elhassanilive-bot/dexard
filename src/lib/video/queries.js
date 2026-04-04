@@ -91,10 +91,12 @@ export async function getChannelPage(username) {
   const supabase = getSupabaseServerClient();
   if (!supabase) return { channel: null, videos: [], error: "Supabase غير مهيأ" };
 
+  const cleanUsername = String(username || "").replace(/^@+/, "").trim();
+
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id,username,display_name,avatar_url,bio")
-    .eq("username", username)
+    .select("id,username,display_name,avatar_url,cover_url,bio,created_at")
+    .eq("username", cleanUsername)
     .maybeSingle();
 
   if (profileError) return { channel: null, videos: [], error: profileError.message };
@@ -111,9 +113,16 @@ export async function getChannelPage(username) {
   ]);
 
   const hydratedVideos = await Promise.all((videos || []).map((row) => withUrls(supabase, row)));
+  const videosCount = hydratedVideos.length;
+  const totalViews = hydratedVideos.reduce((sum, item) => sum + Number(item.views_count || 0), 0);
 
   return {
-    channel: { ...profile, subscribers_count: subscribersCount || 0 },
+    channel: {
+      ...profile,
+      subscribers_count: subscribersCount || 0,
+      videos_count: videosCount,
+      total_views: totalViews,
+    },
     videos: hydratedVideos,
     error: null,
   };

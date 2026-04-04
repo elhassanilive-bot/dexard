@@ -400,3 +400,5 @@
  GET /watch/dcc03e41-46f8-4a86-8ab5-565307907e07 200 in 1164ms (compile: 89ms, render: 1076ms)
  GET /watch/dcc03e41-46f8-4a86-8ab5-565307907e07 200 in 952ms (compile: 305ms, render: 647ms)
  GET /watch/dcc03e41-46f8-4a86-8ab5-565307907e07 200 in 1240ms (compile: 107ms, render: 1133ms)
+○ Compiling /_error ...
+ GET /watch/dcc03e41-46f8-4a86-8ab5-565307907e07 500 in 11.3min (compile: 158ms, render: 11.3min)

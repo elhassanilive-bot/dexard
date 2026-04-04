@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const DOWNLOADS_KEY = "dexard_downloads";
+
 function DownloadIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
@@ -17,6 +19,26 @@ function parseFilename(disposition) {
   if (utf8Match?.[1]) return decodeURIComponent(utf8Match[1]);
   const plainMatch = disposition.match(/filename="?([^";]+)"?/i);
   return plainMatch?.[1] || "video.mp4";
+}
+
+function saveDownloadItem(videoId, filename) {
+  try {
+    const raw = localStorage.getItem(DOWNLOADS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    const list = Array.isArray(parsed) ? parsed : [];
+
+    const item = {
+      id: `${videoId}-${Date.now()}`,
+      video_id: videoId,
+      filename,
+      downloaded_at: new Date().toISOString(),
+    };
+
+    const next = [item, ...list].slice(0, 100);
+    localStorage.setItem(DOWNLOADS_KEY, JSON.stringify(next));
+  } catch {
+    // ignore localStorage failures
+  }
 }
 
 export default function DownloadVideoButton({ videoId, accessToken }) {
@@ -54,6 +76,7 @@ export default function DownloadVideoButton({ videoId, accessToken }) {
       document.body.removeChild(anchor);
       URL.revokeObjectURL(url);
 
+      saveDownloadItem(videoId, filename);
       setDone(true);
       window.setTimeout(() => setDone(false), 1400);
     } catch {

@@ -1,18 +1,30 @@
 ﻿"use client";
 
 import { useEffect } from "react";
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 const T = {
-  noSource: "\u0645\u0635\u062f\u0631 \u0627\u0644\u0641\u064a\u062f\u064a\u0648 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d",
-  noSupport: "\u0645\u062a\u0635\u0641\u062d\u0643 \u0644\u0627 \u064a\u062f\u0639\u0645 \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u0641\u064a\u062f\u064a\u0648",
+  noSource: "مصدر الفيديو غير متاح",
+  noSupport: "متصفحك لا يدعم تشغيل الفيديو",
 };
 
 export default function VideoPlayer({ src, poster, title, videoId }) {
   useEffect(() => {
     if (!videoId) return;
-    const timer = setTimeout(() => {
-      fetch(`/api/videos/${videoId}/view`, { method: "POST" }).catch(() => null);
+
+    const timer = setTimeout(async () => {
+      try {
+        const supabase = await getSupabaseClient();
+        if (!supabase) { await fetch(`/api/videos/${videoId}/view`, { method: "POST" }); return; }
+        const { data } = await supabase.auth.getSession();
+        const token = data?.session?.access_token || "";
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+        await fetch(`/api/videos/${videoId}/view`, { method: "POST", headers });
+      } catch {
+        // ignore view tracking failures
+      }
     }, 2000);
+
     return () => clearTimeout(timer);
   }, [videoId]);
 
@@ -27,3 +39,5 @@ export default function VideoPlayer({ src, poster, title, videoId }) {
     </video>
   );
 }
+
+
