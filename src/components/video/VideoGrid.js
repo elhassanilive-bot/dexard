@@ -8,7 +8,7 @@ const T = {
   empty: "لا توجد فيديوهات متاحة حاليًا",
 };
 
-export default function VideoGrid({ videos, mode = "home", allowPin = false, onPinChanged }) {
+export default function VideoGrid({ videos, mode = "home", allowPin = false, ownerId = "", onPinChanged }) {
   const [viewerId, setViewerId] = useState("");
 
   useEffect(() => {
@@ -23,8 +23,16 @@ export default function VideoGrid({ videos, mode = "home", allowPin = false, onP
       try {
         const supabase = await getSupabaseClient();
         if (!supabase) return;
-        const { data } = await supabase.auth.getUser();
-        if (mounted) setViewerId(data?.user?.id || "");
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        const sessionUserId = sessionData?.session?.user?.id || "";
+        if (sessionUserId) {
+          if (mounted) setViewerId(sessionUserId);
+          return;
+        }
+
+        const { data: userData } = await supabase.auth.getUser();
+        if (mounted) setViewerId(userData?.user?.id || "");
       } catch {
         if (mounted) setViewerId("");
       }
@@ -49,8 +57,9 @@ export default function VideoGrid({ videos, mode = "home", allowPin = false, onP
   return (
     <div className={gridClass}>
       {videos.map((video) => {
-        const ownerCanPin = Boolean(viewerId && video?.user_id && String(viewerId) === String(video.user_id));
-        const canPin = Boolean(allowPin && (video?.can_pin || ownerCanPin));
+        const ownerByVideo = Boolean(viewerId && video?.user_id && String(viewerId) === String(video.user_id));
+        const ownerByChannel = Boolean(viewerId && ownerId && String(viewerId) === String(ownerId));
+        const canPin = Boolean(allowPin && (video?.can_pin || ownerByVideo || ownerByChannel));
 
         return (
           <VideoCard

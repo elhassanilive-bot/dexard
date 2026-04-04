@@ -18,15 +18,9 @@ const T = {
   pin: "تثبيت الفيديو",
   unpin: "إلغاء تثبيت الفيديو",
   pinHint: "يظهر في مقدمة القناة",
+  pinUnavailable: "التثبيت متاح لمالك القناة فقط",
   pinFailed: "تعذر تحديث حالة التثبيت",
 };
-
-function truncateText(value, max = 24) {
-  const text = String(value || "").trim();
-  if (!text) return "";
-  if (text.length <= max) return text;
-  return `${text.slice(0, max)}...`;
-}
 
 function formatRelativeTimeCompact(value) {
   if (!value) return "الآن";
@@ -79,29 +73,36 @@ function PinMenuButton({ canPin, pinned, pending, onToggle }) {
         </svg>
       </button>
 
-      {open && canPin ? (
+      {open ? (
         <div className="absolute left-0 top-10 z-30 min-w-48 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
-          <button
-            type="button"
-            disabled={pending}
-            onClick={async () => {
-              await onToggle();
-              setOpen(false);
-            }}
-            className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
-          >
-            <span className="text-right">
-              <span className="block font-semibold">{pinned ? T.unpin : T.pin}</span>
-              <span className="block text-[11px] text-slate-500">{T.pinHint}</span>
-            </span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-800">
-              {pinned ? (
-                <path d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.06.68L12 18.47l-4.94 2.46A.75.75 0 0 1 6 20.25V3.75A.75.75 0 0 1 6.75 3Z" />
-              ) : (
-                <path d="M17.25 3A2.25 2.25 0 0 1 19.5 5.25v15a.75.75 0 0 1-1.09.67L12 17.72l-6.41 3.2A.75.75 0 0 1 4.5 20.25v-15A2.25 2.25 0 0 1 6.75 3h10.5Zm.75 2.25a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v13.79l5.66-2.83a.75.75 0 0 1 .68 0L18 19.04V5.25Z" />
-              )}
-            </svg>
-          </button>
+          {canPin ? (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={async () => {
+                await onToggle();
+                setOpen(false);
+              }}
+              className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+            >
+              <span className="text-right">
+                <span className="block font-semibold">{pinned ? T.unpin : T.pin}</span>
+                <span className="block text-[11px] text-slate-500">{T.pinHint}</span>
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-800">
+                {pinned ? (
+                  <path d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.06.68L12 18.47l-4.94 2.46A.75.75 0 0 1 6 20.25V3.75A.75.75 0 0 1 6.75 3Z" />
+                ) : (
+                  <path d="M17.25 3A2.25 2.25 0 0 1 19.5 5.25v15a.75.75 0 0 1-1.09.67L12 17.72l-6.41 3.2A.75.75 0 0 1 4.5 20.25v-15A2.25 2.25 0 0 1 6.75 3h10.5Zm.75 2.25a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v13.79l5.66-2.83a.75.75 0 0 1 .68 0L18 19.04V5.25Z" />
+                )}
+              </svg>
+            </button>
+          ) : (
+            <div className="rounded-lg px-3 py-2 text-sm text-slate-500">
+              <span className="block font-semibold text-slate-600">{T.pin}</span>
+              <span className="mt-0.5 block text-[11px]">{T.pinUnavailable}</span>
+            </div>
+          )}
         </div>
       ) : null}
     </div>
@@ -213,7 +214,7 @@ function LibraryCard({ video, title, displayName, href, pinned, canPin, pending,
 export default function VideoCard({ video, mode = "home", allowPin = false, onPinChanged }) {
   const href = `/watch/${video.id}`;
   const displayName = video.channel?.display_name || video.channel?.username || T.channel;
-  const compactName = truncateText(displayName, 16);
+  const compactName = String(displayName || "").trim().length > 16 ? `${String(displayName || "").trim().slice(0, 16)}...` : String(displayName || "").trim();
   const avatarUrl = video.channel?.avatar_url || "";
   const timeAgo = formatRelativeTimeCompact(video.created_at);
   const title = video.title || T.untitled;
@@ -262,3 +263,4 @@ export default function VideoCard({ video, mode = "home", allowPin = false, onPi
 
   return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} pinned={pinned} canPin={allowPin} pending={pendingPin} onTogglePin={togglePin} />;
 }
+

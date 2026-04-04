@@ -5,13 +5,13 @@ import { formatCompactNumber } from "@/lib/video/format";
 import Image from "next/image";
 
 const T = {
-  notFound: "\u0627\u0644\u0642\u0646\u0627\u0629 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f\u0629",
-  fallbackBio: "\u0642\u0646\u0627\u0629 \u0644\u0646\u0634\u0631 \u0645\u062d\u062a\u0648\u0649 \u0647\u0627\u062f\u0641 \u0648\u0645\u0641\u064a\u062f",
-  subscribers: "\u0645\u0634\u062a\u0631\u0643",
-  videos: "\u0641\u064a\u062f\u064a\u0648",
-  views: "\u0645\u0634\u0627\u0647\u062f\u0629",
-  channelVideos: "\u0641\u064a\u062f\u064a\u0648\u0647\u0627\u062a \u0627\u0644\u0642\u0646\u0627\u0629",
-  joined: "\u0627\u0646\u0636\u0645",
+  notFound: "القناة غير موجودة",
+  fallbackBio: "قناة لنشر محتوى هادف ومفيد",
+  subscribers: "مشترك",
+  videos: "فيديو",
+  views: "مشاهدة",
+  channelVideos: "فيديوهات القناة",
+  joined: "انضم",
 };
 
 function initials(name) {
@@ -30,9 +30,32 @@ function formatJoinDate(value) {
   }).format(date);
 }
 
+function safeImageSrc(value) {
+  const src = String(value || "").trim();
+  if (!src) return "";
+  if (src.startsWith("/")) return src;
+  if (src.startsWith("http://") || src.startsWith("https://")) return src;
+  return "";
+}
+
 export default async function ChannelPage({ params }) {
   const { username } = await params;
-  const { channel, videos } = await getChannelPage(username);
+  let channel = null;
+  let videos = [];
+  let pageError = "";
+
+  try {
+    const payload = await getChannelPage(username);
+    channel = payload?.channel || null;
+    videos = Array.isArray(payload?.videos) ? payload.videos : [];
+    pageError = payload?.error || "";
+  } catch {
+    pageError = "تعذر تحميل القناة حاليا";
+  }
+
+  if (pageError) {
+    return <div className="mx-auto max-w-4xl px-4 py-10 text-center text-slate-600">{pageError}</div>;
+  }
 
   if (!channel) {
     return <div className="mx-auto max-w-4xl px-4 py-10 text-center text-slate-600">{T.notFound}</div>;
@@ -44,12 +67,14 @@ export default async function ChannelPage({ params }) {
   const subscribersCount = Number(channel.subscribers_count || 0);
   const totalViews = Number(channel.total_views || 0);
   const joinedAt = formatJoinDate(channel.created_at);
+  const coverSrc = safeImageSrc(channel.cover_url);
+  const avatarSrc = safeImageSrc(channel.avatar_url);
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-4 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
         <div className="relative h-36 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 sm:h-48 md:h-60">
-          {channel.cover_url ? <Image src={channel.cover_url} alt={displayName} fill sizes="(max-width: 768px) 100vw, 1200px" className="object-cover" /> : null}
+          {coverSrc ? <Image src={coverSrc} alt={displayName} fill sizes="(max-width: 768px) 100vw, 1200px" className="object-cover" /> : null}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/25 to-transparent" />
         </div>
 
@@ -57,9 +82,9 @@ export default async function ChannelPage({ params }) {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-start gap-4">
               <div className="-mt-10 h-24 w-24 min-h-24 min-w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md sm:-mt-12 sm:h-28 sm:w-28 sm:min-h-28 sm:min-w-28">
-                {channel.avatar_url ? (
+                {avatarSrc ? (
                   <span className="relative block h-full w-full">
-                    <Image src={channel.avatar_url} alt={displayName} fill sizes="112px" className="rounded-full object-cover" />
+                    <Image src={avatarSrc} alt={displayName} fill sizes="112px" className="rounded-full object-cover" />
                   </span>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-3xl font-black text-slate-500">{initials(displayName)}</div>
@@ -93,7 +118,7 @@ export default async function ChannelPage({ params }) {
           <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">{formatCompactNumber(videosCount)} {T.videos}</span>
         </div>
 
-        <VideoGrid videos={videos} mode="channel" allowPin />
+        <VideoGrid videos={videos} mode="channel" allowPin ownerId={channel.id} />
       </section>
     </div>
   );
