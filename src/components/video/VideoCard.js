@@ -1,4 +1,8 @@
-﻿import { formatArabicDate, formatCompactNumber, formatDuration } from "@/lib/video/format";
+﻿"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { formatArabicDate, formatCompactNumber, formatDuration } from "@/lib/video/format";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,6 +15,10 @@ const T = {
   savedAt: "تم الحفظ",
   watchedAt: "آخر مشاهدة",
   reactedAt: "آخر تفاعل",
+  pin: "تثبيت الفيديو",
+  unpin: "إلغاء تثبيت الفيديو",
+  pinHint: "يظهر في مقدمة القناة",
+  pinFailed: "تعذر تحديث حالة التثبيت",
 };
 
 function truncateText(value, max = 24) {
@@ -41,7 +49,66 @@ function getContextLine(video) {
   return "";
 }
 
-function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeAgo, href }) {
+function PinMenuButton({ canPin, pinned, pending, onToggle }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    function onOutside(e) {
+      if (!wrapRef.current?.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={wrapRef}>
+      <button
+        type="button"
+        aria-label={T.menu}
+        title={T.menu}
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+          <circle cx="12" cy="5" r="1.8" />
+          <circle cx="12" cy="12" r="1.8" />
+          <circle cx="12" cy="19" r="1.8" />
+        </svg>
+      </button>
+
+      {open && canPin ? (
+        <div className="absolute left-0 top-10 z-30 min-w-48 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
+          <button
+            type="button"
+            disabled={pending}
+            onClick={async () => {
+              await onToggle();
+              setOpen(false);
+            }}
+            className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+          >
+            <span className="text-right">
+              <span className="block font-semibold">{pinned ? T.unpin : T.pin}</span>
+              <span className="block text-[11px] text-slate-500">{T.pinHint}</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-800">
+              {pinned ? (
+                <path d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.06.68L12 18.47l-4.94 2.46A.75.75 0 0 1 6 20.25V3.75A.75.75 0 0 1 6.75 3Z" />
+              ) : (
+                <path d="M17.25 3A2.25 2.25 0 0 1 19.5 5.25v15a.75.75 0 0 1-1.09.67L12 17.72l-6.41 3.2A.75.75 0 0 1 4.5 20.25v-15A2.25 2.25 0 0 1 6.75 3h10.5Zm.75 2.25a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v13.79l5.66-2.83a.75.75 0 0 1 .68 0L18 19.04V5.25Z" />
+              )}
+            </svg>
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeAgo, href, pinned, canPin, pending, onTogglePin }) {
   return (
     <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
       <Link href={href} className="block overflow-hidden">
@@ -57,6 +124,8 @@ function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeA
           ) : (
             <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-bold text-white">{T.noThumb}</div>
           )}
+
+          {pinned ? <span className="absolute left-2 top-2 rounded-full bg-amber-500/95 px-2 py-0.5 text-[10px] font-semibold text-white">مثبّت</span> : null}
 
           <div className="absolute right-2 top-2">
             <div className="flex items-center gap-1.5 rounded-full bg-black/40 px-1.5 py-1 backdrop-blur-md">
@@ -89,19 +158,13 @@ function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeA
             {title}
           </h3>
         </Link>
-        <button type="button" aria-label={T.menu} title={T.menu} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
-            <circle cx="12" cy="5" r="1.8" />
-            <circle cx="12" cy="12" r="1.8" />
-            <circle cx="12" cy="19" r="1.8" />
-          </svg>
-        </button>
+        <PinMenuButton canPin={canPin} pinned={pinned} pending={pending} onToggle={onTogglePin} />
       </div>
     </article>
   );
 }
 
-function LibraryCard({ video, title, displayName, href }) {
+function LibraryCard({ video, title, displayName, href, pinned, canPin, pending, onTogglePin }) {
   const contextLine = getContextLine(video);
   return (
     <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
@@ -120,14 +183,18 @@ function LibraryCard({ video, title, displayName, href }) {
               <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-900 to-slate-700 text-xs font-bold text-white">{T.noThumb}</div>
             )}
             <span className="absolute bottom-2 left-2 rounded-lg bg-black/80 px-2 py-0.5 text-[11px] font-semibold text-white">{formatDuration(video.duration_sec)}</span>
+            {pinned ? <span className="absolute left-2 top-2 rounded-full bg-amber-500/95 px-2 py-0.5 text-[10px] font-semibold text-white">مثبّت</span> : null}
           </div>
         </Link>
 
         <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
           <div className="space-y-2 text-right">
-            <Link href={href}>
-              <h3 className="line-clamp-2 text-base font-extrabold leading-6 text-slate-900" title={title}>{title}</h3>
-            </Link>
+            <div className="flex items-start justify-between gap-2">
+              <PinMenuButton canPin={canPin} pinned={pinned} pending={pending} onToggle={onTogglePin} />
+              <Link href={href} className="min-w-0 flex-1">
+                <h3 className="line-clamp-2 text-base font-extrabold leading-6 text-slate-900" title={title}>{title}</h3>
+              </Link>
+            </div>
             <p className="truncate text-sm font-semibold text-slate-600">{displayName}</p>
             <p className="text-xs text-slate-500">{formatCompactNumber(video.views_count)} {T.views}</p>
           </div>
@@ -143,7 +210,7 @@ function LibraryCard({ video, title, displayName, href }) {
   );
 }
 
-export default function VideoCard({ video, mode = "home" }) {
+export default function VideoCard({ video, mode = "home", allowPin = false, onPinChanged }) {
   const href = `/watch/${video.id}`;
   const displayName = video.channel?.display_name || video.channel?.username || T.channel;
   const compactName = truncateText(displayName, 16);
@@ -151,9 +218,47 @@ export default function VideoCard({ video, mode = "home" }) {
   const timeAgo = formatRelativeTimeCompact(video.created_at);
   const title = video.title || T.untitled;
 
-  if (mode === "library") {
-    return <LibraryCard video={video} title={title} displayName={displayName} href={href} />;
+  const [pinned, setPinned] = useState(Boolean(video?.is_pinned));
+  const [pendingPin, setPendingPin] = useState(false);
+
+  async function togglePin() {
+    if (!allowPin || pendingPin) return;
+    setPendingPin(true);
+    const previous = pinned;
+    setPinned(!previous);
+
+    try {
+      const supabase = await getSupabaseClient();
+      if (!supabase) throw new Error("no_supabase");
+      const { data } = await supabase.auth.getSession();
+      const token = data?.session?.access_token || "";
+      if (!token) throw new Error("no_auth");
+
+      const response = await fetch(`/api/videos/${video.id}/pin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ pinned: !previous }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.pinFailed);
+
+      setPinned(Boolean(payload?.pinned));
+      if (typeof onPinChanged === "function") onPinChanged(Boolean(payload?.pinned));
+    } catch {
+      setPinned(previous);
+      window.alert(T.pinFailed);
+    } finally {
+      setPendingPin(false);
+    }
   }
 
-  return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} />;
+  if (mode === "library") {
+    return <LibraryCard video={video} title={title} displayName={displayName} href={href} pinned={pinned} canPin={allowPin} pending={pendingPin} onTogglePin={togglePin} />;
+  }
+
+  return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} pinned={pinned} canPin={allowPin} pending={pendingPin} onTogglePin={togglePin} />;
 }

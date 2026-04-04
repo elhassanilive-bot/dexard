@@ -105,9 +105,11 @@ export async function getChannelPage(username) {
   const [{ data: videos }, { count: subscribersCount }] = await Promise.all([
     supabase
       .from("videos")
-      .select("id,title,duration_sec,views_count,created_at,thumbnail_path,user_id,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)")
+      .select("id,title,duration_sec,views_count,created_at,thumbnail_path,user_id,is_pinned,pinned_at,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)")
       .eq("user_id", profile.id)
       .eq("status", "published")
+      .order("is_pinned", { ascending: false })
+      .order("pinned_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false }),
     supabase.from("subscriptions").select("subscriber_id", { count: "exact", head: true }).eq("channel_id", profile.id),
   ]);

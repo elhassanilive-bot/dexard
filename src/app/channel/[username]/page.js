@@ -1,17 +1,17 @@
 ﻿import VideoGrid from "@/components/video/VideoGrid";
-import VideoCard from "@/components/video/VideoCard";
 import ChannelSubscribeButton from "@/components/video/ChannelSubscribeButton";
 import { getChannelPage } from "@/lib/video/queries";
 import { formatCompactNumber } from "@/lib/video/format";
 import Image from "next/image";
 
 const T = {
-  notFound: "القناة غير موجودة",
-  fallbackBio: "قناة لنشر محتوى هادف ومفيد",
-  subscribers: "مشترك",
-  videos: "فيديو",
-  views: "مشاهدة",
-  channelVideos: "فيديوهات القناة",  joined: "انضم",
+  notFound: "\u0627\u0644\u0642\u0646\u0627\u0629 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f\u0629",
+  fallbackBio: "\u0642\u0646\u0627\u0629 \u0644\u0646\u0634\u0631 \u0645\u062d\u062a\u0648\u0649 \u0647\u0627\u062f\u0641 \u0648\u0645\u0641\u064a\u062f",
+  subscribers: "\u0645\u0634\u062a\u0631\u0643",
+  videos: "\u0641\u064a\u062f\u064a\u0648",
+  views: "\u0645\u0634\u0627\u0647\u062f\u0629",
+  channelVideos: "\u0641\u064a\u062f\u064a\u0648\u0647\u0627\u062a \u0627\u0644\u0642\u0646\u0627\u0629",
+  joined: "\u0627\u0646\u0636\u0645",
 };
 
 function initials(name) {
@@ -70,7 +70,7 @@ export default async function ChannelPage({ params }) {
                 <h1 className="break-words text-xl font-bold leading-tight text-slate-900 sm:text-3xl">{displayName}</h1>
                 <p className="mt-1 break-all text-sm font-medium text-slate-600" dir="ltr">@{channel.username}</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  {formatCompactNumber(subscribersCount)} {T.subscribers} · {formatCompactNumber(videosCount)} {T.videos} · {formatCompactNumber(totalViews)} {T.views}
+                  {formatCompactNumber(subscribersCount)} {T.subscribers} - {formatCompactNumber(videosCount)} {T.videos} - {formatCompactNumber(totalViews)} {T.views}
                 </p>
                 {joinedAt ? <p className="mt-1 text-xs text-slate-500">{T.joined} {joinedAt}</p> : null}
               </div>
@@ -93,10 +93,8 @@ export default async function ChannelPage({ params }) {
           <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">{formatCompactNumber(videosCount)} {T.videos}</span>
         </div>
 
-        <VideoGrid videos={videos} mode="home" />
+        <VideoGrid videos={videos} mode="channel" allowPin />
       </section>
     </div>
   );
 }
-
-

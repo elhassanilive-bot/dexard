@@ -17,8 +17,10 @@ export async function GET(request) {
 
   const { data, error } = await supabase
     .from("videos")
-    .select("id,title,duration_sec,views_count,created_at,thumbnail_path,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)")
+    .select("id,user_id,title,duration_sec,views_count,created_at,thumbnail_path,is_pinned,pinned_at,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)")
     .eq("user_id", user.id)
+    .order("is_pinned", { ascending: false })
+    .order("pinned_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,7 +33,7 @@ export async function GET(request) {
         const { data: signed } = await signer.storage.from(THUMBNAIL_BUCKET).createSignedUrl(video.thumbnail_path, 60 * 60);
         thumbnail_url = signed?.signedUrl || null;
       }
-      return { ...video, thumbnail_url };
+      return { ...video, thumbnail_url, can_pin: true };
     })
   );
 

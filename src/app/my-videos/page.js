@@ -6,5 +6,6 @@ export const metadata = {
 };
 
 export default function MyVideosPage() {
-  return <AuthenticatedVideoCollection title="مقاطعك" endpoint="/api/me/videos" emptyText="لا توجد فيديوهات في قناتك حتى الآن" />;
+  return <AuthenticatedVideoCollection title="مقاطعك" endpoint="/api/me/videos" emptyText="لا توجد فيديوهات في قناتك حتى الآن" allowPin />;
 }
+
