@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import InfiniteVideoFeed from "@/components/video/InfiniteVideoFeed";
 import { FEED_FILTERS } from "@/lib/video/constants";
 import { listVideos } from "@/lib/video/queries";
@@ -8,7 +8,7 @@ function FilterTab({ href, active, children }) {
     <Link
       href={href}
       className={[
-        "rounded-full px-3 py-1.5 text-xs font-normal transition",
+        "rounded-full px-2.5 py-1 text-[11px] font-normal transition",
         active ? "bg-slate-900 text-white" : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -52,3 +52,4 @@ export default async function HomePage({ searchParams }) {
     </div>
   );
 }
+

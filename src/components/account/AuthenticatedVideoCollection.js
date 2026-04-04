@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import VideoGrid from "@/components/video/VideoGrid";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
-export default function AuthenticatedVideoCollection({ title, endpoint, emptyText }) {
+export default function AuthenticatedVideoCollection({ title, endpoint, emptyText, mode = "library" }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
@@ -59,9 +59,10 @@ export default function AuthenticatedVideoCollection({ title, endpoint, emptyTex
       {loading ? <p className="text-right text-sm text-slate-500">جاري التحميل...</p> : null}
       {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-right text-sm text-rose-700">{error}</p> : null}
       {!loading && !error && items.length === 0 ? <p className="text-right text-sm text-slate-500">{emptyText}</p> : null}
-      {!loading && !error && items.length > 0 ? <VideoGrid videos={items} /> : null}
+      {!loading && !error && items.length > 0 ? <VideoGrid videos={items} mode={mode} /> : null}
     </section>
   );
 }
+
 
 

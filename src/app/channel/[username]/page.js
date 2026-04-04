@@ -1,7 +1,9 @@
 ﻿import VideoGrid from "@/components/video/VideoGrid";
+import VideoCard from "@/components/video/VideoCard";
 import ChannelSubscribeButton from "@/components/video/ChannelSubscribeButton";
 import { getChannelPage } from "@/lib/video/queries";
 import { formatCompactNumber } from "@/lib/video/format";
+import Image from "next/image";
 
 const T = {
   notFound: "القناة غير موجودة",
@@ -9,8 +11,7 @@ const T = {
   subscribers: "مشترك",
   videos: "فيديو",
   views: "مشاهدة",
-  channelVideos: "فيديوهات القناة",
-  joined: "انضم",
+  channelVideos: "فيديوهات القناة",  joined: "انضم",
 };
 
 function initials(name) {
@@ -48,24 +49,26 @@ export default async function ChannelPage({ params }) {
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-4 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
         <div className="relative h-36 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 sm:h-48 md:h-60">
-          {channel.cover_url ? <img src={channel.cover_url} alt={displayName} className="h-full w-full object-cover" /> : null}
+          {channel.cover_url ? <Image src={channel.cover_url} alt={displayName} fill sizes="(max-width: 768px) 100vw, 1200px" className="object-cover" /> : null}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/25 to-transparent" />
         </div>
 
-        <div className="relative -mt-12 px-4 pb-5 sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div className="flex items-end gap-4">
-              <div className="h-24 w-24 min-h-24 min-w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md sm:h-28 sm:w-28 sm:min-h-28 sm:min-w-28">
+        <div className="relative px-4 pb-5 sm:px-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="-mt-10 h-24 w-24 min-h-24 min-w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md sm:-mt-12 sm:h-28 sm:w-28 sm:min-h-28 sm:min-w-28">
                 {channel.avatar_url ? (
-                  <img src={channel.avatar_url} alt={displayName} className="h-full w-full rounded-full object-cover" />
+                  <span className="relative block h-full w-full">
+                    <Image src={channel.avatar_url} alt={displayName} fill sizes="112px" className="rounded-full object-cover" />
+                  </span>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-3xl font-black text-slate-500">{initials(displayName)}</div>
                 )}
               </div>
 
-              <div className="pb-1 text-right">
-                <h1 className="text-2xl font-black text-slate-900 sm:text-4xl">{displayName}</h1>
-                <p className="mt-1 text-base font-semibold text-slate-600" dir="ltr">@{channel.username}</p>
+              <div className="pt-3 text-right">
+                <h1 className="break-words text-xl font-bold leading-tight text-slate-900 sm:text-3xl">{displayName}</h1>
+                <p className="mt-1 break-all text-sm font-medium text-slate-600" dir="ltr">@{channel.username}</p>
                 <p className="mt-2 text-sm text-slate-600">
                   {formatCompactNumber(subscribersCount)} {T.subscribers} · {formatCompactNumber(videosCount)} {T.videos} · {formatCompactNumber(totalViews)} {T.views}
                 </p>
@@ -73,12 +76,8 @@ export default async function ChannelPage({ params }) {
               </div>
             </div>
 
-            <div className="pb-2">
-              <ChannelSubscribeButton
-                username={channel.username}
-                channelId={channel.id}
-                initialCount={subscribersCount}
-              />
+            <div className="pt-3">
+              <ChannelSubscribeButton username={channel.username} channelId={channel.id} initialCount={subscribersCount} />
             </div>
           </div>
 
@@ -90,11 +89,14 @@ export default async function ChannelPage({ params }) {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-right text-2xl font-black text-slate-900">{T.channelVideos}</h2>
+          <h2 className="text-right text-xl font-bold text-slate-900">{T.channelVideos}</h2>
           <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">{formatCompactNumber(videosCount)} {T.videos}</span>
         </div>
-        <VideoGrid videos={videos} />
+
+        <VideoGrid videos={videos} mode="home" />
       </section>
     </div>
   );
 }
+
+

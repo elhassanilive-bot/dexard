@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import VideoGrid from "@/components/video/VideoGrid";
@@ -88,7 +88,7 @@ export default function InfiniteVideoFeed({
 
   return (
     <section className="space-y-4">
-      <VideoGrid videos={videos} />
+      <VideoGrid videos={videos} mode="home" />
 
       <div ref={sentinelRef} className="flex min-h-14 items-center justify-center">
         {isLoadingMore ? <span className="text-xs text-slate-500">{T.loading}</span> : null}
@@ -102,3 +102,4 @@ export default function InfiniteVideoFeed({
     </section>
   );
 }
+

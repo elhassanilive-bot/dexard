@@ -125,7 +125,7 @@ function MenuItemIcon({ name }) {
 
 function rowClass(active) {
   return [
-    "flex flex-row-reverse items-center justify-end gap-3 rounded-xl px-3 py-2.5 text-right text-sm font-semibold transition",
+    "flex flex-row-reverse items-center justify-end gap-3 rounded-xl px-3 py-2.5 text-right text-[0.92rem] font-medium transition",
     active ? "border-r-2 border-slate-950 text-slate-950" : "text-slate-700 hover:text-slate-950",
   ].join(" ");
 }
@@ -168,13 +168,13 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
 
       <aside
         className={[
-          "fixed right-0 top-0 z-[80] h-screen w-[86vw] max-w-sm border-l border-slate-200 bg-white p-4 shadow-2xl transition-transform duration-300",
+          "fixed right-0 top-0 z-[80] flex h-screen w-[86vw] max-w-sm flex-col overflow-hidden border-l border-slate-200 bg-white p-4 shadow-2xl transition-transform duration-300",
           open ? "translate-x-0" : "translate-x-full",
         ].join(" ")}
         aria-hidden={!open}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-black text-slate-900">{T.menu}</h2>
+          <h2 className="text-base font-bold text-slate-900">{T.menu}</h2>
           <button type="button" onClick={onClose} className="rounded-full border border-slate-300 px-3 py-1 text-xs font-bold text-slate-700">
             {T.close}
           </button>
@@ -183,7 +183,7 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
         <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           {isAuthed ? (
             <Link href="/account" onClick={onClose} className="flex flex-row-reverse items-center justify-end gap-3 text-right">
-              <span className="text-sm font-semibold text-slate-800">{T.account}</span>
+              <span className="text-[0.95rem] font-medium text-slate-800">{T.account}</span>
               <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-black text-slate-800">
                 {avatarUrl ? <img src={avatarUrl} alt={T.account} className="h-full w-full object-cover" /> : initials}
               </span>
@@ -195,7 +195,7 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
           )}
         </div>
 
-        <nav className="space-y-1">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
           {items.map((item) => (
             <Link key={item.href} href={item.href} onClick={onClose} className={rowClass(pathname === item.href)}>
               <span>{item.label}</span>
@@ -207,3 +207,4 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
     </>
   );
 }
+

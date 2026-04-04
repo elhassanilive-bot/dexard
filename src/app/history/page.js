@@ -82,7 +82,8 @@ export default function HistoryPage() {
       {loading ? <p className="text-right text-sm text-slate-500">جاري التحميل...</p> : null}
       {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-right text-sm text-rose-700">{error}</p> : null}
       {!loading && !error && sorted.length === 0 ? <p className="text-right text-sm text-slate-500">لا يوجد سجل مشاهدة بعد</p> : null}
-      {!loading && !error && sorted.length > 0 ? <VideoGrid videos={sorted} /> : null}
+      {!loading && !error && sorted.length > 0 ? <VideoGrid videos={sorted} mode="library" /> : null}
     </section>
   );
 }
+
