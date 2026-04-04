@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import VideoCard from "@/components/video/VideoCard";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
 const T = {
-  empty: "?? ???? ???????? ????? ??????",
+  empty: "لا توجد فيديوهات متاحة حاليًا",
 };
 
 export default function VideoGrid({ videos, mode = "home", allowPin = false, onPinChanged }) {

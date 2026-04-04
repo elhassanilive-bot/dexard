@@ -9,7 +9,8 @@ export default function AuthenticatedVideoCollection({ title, endpoint, emptyTex
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
-  const [error, setError] = useState("");`r`n  const [refreshTick, setRefreshTick] = useState(0);
+  const [error, setError] = useState("");
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     let alive = true;
@@ -63,7 +64,3 @@ export default function AuthenticatedVideoCollection({ title, endpoint, emptyTex
     </section>
   );
 }
-
-
-
-
