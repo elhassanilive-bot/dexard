@@ -33,6 +33,7 @@ async function generateThumbnailFromVideo(file) {
     video.src = url;
     video.muted = true;
     video.playsInline = true;
+    video.preload = "metadata";
 
     video.onloadedmetadata = () => {
       const targetSecond = Math.min(1, Math.max(0, video.duration / 3));
@@ -41,10 +42,15 @@ async function generateThumbnailFromVideo(file) {
 
     video.onseeked = () => {
       try {
+        const srcW = Math.max(1, video.videoWidth || 1280);
+        const srcH = Math.max(1, video.videoHeight || 720);
+        const maxEdge = 960; // أسرع من 1280 بدون خسارة ملحوظة في المعاينة
+        const scale = Math.min(1, maxEdge / Math.max(srcW, srcH));
         const canvas = document.createElement("canvas");
-        canvas.width = 1280;
-        canvas.height = 720;
-        const context = canvas.getContext("2d");
+        canvas.width = Math.max(320, Math.round(srcW * scale));
+        canvas.height = Math.max(180, Math.round(srcH * scale));
+
+        const context = canvas.getContext("2d", { alpha: false });
         if (!context) throw new Error("Canvas غير متاح");
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -58,7 +64,7 @@ async function generateThumbnailFromVideo(file) {
             resolve(blob);
           },
           "image/jpeg",
-          0.85
+          0.82
         );
       } catch (drawError) {
         URL.revokeObjectURL(url);
@@ -214,29 +220,47 @@ export default function UploadVideoForm() {
       const session = sessionData?.session;
       if (!session) throw new Error("يجب تسجيل الدخول قبل رفع الفيديو.");
 
-      const duration = await getVideoDuration(videoFile);
+      setMessage("جاري تجهيز الفيديو...");
+      const [duration, generatedThumb] = await Promise.all([
+        getVideoDuration(videoFile),
+        thumbnailFile ? Promise.resolve(null) : generateThumbnailFromVideo(videoFile),
+      ]);
       if (duration > MAX_VIDEO_DURATION_SECONDS) {
-        throw new Error("مدة الفيديو تتجاوز الحد المسموح (30 دقيقة).");
+        throw new Error("مدة الفيديو تتجاوز الحد المسموح (30 دقيقة).")
       }
 
-      const videoPath = `${session.user.id}/${Date.now()}-${fileNameSafe(videoFile.name)}`;
-      const { error: uploadVideoError } = await supabase.storage.from(VIDEO_BUCKET).upload(videoPath, videoFile, {
-        contentType: videoFile.type || "video/mp4",
-        upsert: false,
-      });
-      if (uploadVideoError) throw uploadVideoError;
+      const effectiveThumbFile = thumbnailFile || generatedThumb;
+      const now = Date.now();
+      const videoPath = `${session.user.id}/${now}-${fileNameSafe(videoFile.name)}`;
 
       let thumbnailPath = null;
-      const effectiveThumbFile = thumbnailFile || (await generateThumbnailFromVideo(videoFile));
       if (effectiveThumbFile) {
         const thumbName = thumbnailFile?.name || `${fileNameSafe(videoFile.name)}.jpg`;
-        thumbnailPath = `${session.user.id}/${Date.now()}-${fileNameSafe(thumbName)}`;
-        const { error: uploadThumbError } = await supabase.storage.from(THUMBNAIL_BUCKET).upload(thumbnailPath, effectiveThumbFile, {
-          contentType: thumbnailFile?.type || "image/jpeg",
-          upsert: false,
-        });
-        if (uploadThumbError) throw uploadThumbError;
+        thumbnailPath = `${session.user.id}/${now}-thumb-${fileNameSafe(thumbName)}`;
       }
+
+      setMessage("جاري رفع الفيديو...");
+      const uploadJobs = [
+        supabase.storage.from(VIDEO_BUCKET).upload(videoPath, videoFile, {
+          contentType: videoFile.type || "video/mp4",
+          upsert: false,
+          cacheControl: "31536000",
+        }),
+      ];
+
+      if (effectiveThumbFile && thumbnailPath) {
+        uploadJobs.push(
+          supabase.storage.from(THUMBNAIL_BUCKET).upload(thumbnailPath, effectiveThumbFile, {
+            contentType: thumbnailFile?.type || "image/jpeg",
+            upsert: false,
+            cacheControl: "31536000",
+          })
+        );
+      }
+
+      const [videoUploadResult, thumbUploadResult] = await Promise.all(uploadJobs);
+      if (videoUploadResult?.error) throw videoUploadResult.error;
+      if (thumbUploadResult?.error) throw thumbUploadResult.error;
 
       const response = await fetch("/api/videos", {
         method: "POST",
@@ -473,3 +497,4 @@ export default function UploadVideoForm() {
     </form>
   );
 }
+

@@ -6,11 +6,25 @@ function getSignerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !service) return null;
-  const dbSchema = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || process.env.SUPABASE_DB_SCHEMA || 'public';
+  const dbSchema = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || process.env.SUPABASE_DB_SCHEMA || "public";
   return createClient(url, service, { auth: { persistSession: false }, db: { schema: dbSchema } });
 }
 
-async function withUrls(supabase, row) {
+async function withThumbnailUrl(supabase, row) {
+  if (!row) return row;
+
+  const signer = getSignerClient() || supabase;
+  const { data: thumbSigned } = row.thumbnail_path
+    ? await signer.storage.from(THUMBNAIL_BUCKET).createSignedUrl(row.thumbnail_path, 60 * 60)
+    : { data: null };
+
+  return {
+    ...row,
+    thumbnail_url: thumbSigned?.signedUrl || null,
+  };
+}
+
+async function withVideoAndThumbnailUrls(supabase, row) {
   if (!row) return row;
 
   const signer = getSignerClient() || supabase;
@@ -39,7 +53,7 @@ export async function listVideos({ q = "", filter = "latest", category = "", cha
     .select(
       `
       id,title,description,keywords,category,duration_sec,views_count,likes_count,dislikes_count,
-      created_at,video_path,thumbnail_path,user_id,
+      created_at,thumbnail_path,user_id,
       channel:profiles!videos_user_id_fkey(username,display_name,avatar_url)
     `,
       { count: "exact" }
@@ -61,7 +75,7 @@ export async function listVideos({ q = "", filter = "latest", category = "", cha
   const { data, count, error } = await query.range(from, to);
   if (error) return { videos: [], total: 0, error: error.message };
 
-  const videos = await Promise.all((data || []).map((row) => withUrls(supabase, row)));
+  const videos = await Promise.all((data || []).map((row) => withThumbnailUrl(supabase, row)));
   return { videos, total: count || 0, error: null };
 }
 
@@ -85,7 +99,7 @@ export async function getVideoById(videoId) {
   if (error) return { video: null, error: error.message };
   if (!data) return { video: null, error: null };
 
-  return { video: await withUrls(supabase, data), error: null };
+  return { video: await withVideoAndThumbnailUrls(supabase, data), error: null };
 }
 
 export async function getChannelPage(username) {
@@ -115,7 +129,7 @@ export async function getChannelPage(username) {
     supabase.from("subscriptions").select("subscriber_id", { count: "exact", head: true }).eq("channel_id", profile.id),
   ]);
 
-  const hydratedVideos = await Promise.all((videos || []).map((row) => withUrls(supabase, row)));
+  const hydratedVideos = await Promise.all((videos || []).map((row) => withThumbnailUrl(supabase, row)));
   const videosCount = hydratedVideos.length;
   const totalViews = hydratedVideos.reduce((sum, item) => sum + Number(item.views_count || 0), 0);
 
@@ -130,4 +144,3 @@ export async function getChannelPage(username) {
     error: null,
   };
 }
-
