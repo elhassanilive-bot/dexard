@@ -64,3 +64,7 @@ Creating turbopack project { dir: 'C:\\D - Project-Web\\Dexard-Web', testMode: t
 ✓ Compiled in 371ms
  GET /channel/said 200 in 957ms (compile: 453ms, render: 504ms)
  GET /channel/said 200 in 123ms (compile: 7ms, render: 116ms)
+ GET /channel/said 200 in 2.2s (compile: 61ms, render: 2.1s)
+ GET / 200 in 1203ms (compile: 275ms, render: 928ms)
+✓ Compiled in 195ms
+ GET / 200 in 150ms (compile: 9ms, render: 140ms)

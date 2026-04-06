@@ -86,6 +86,27 @@ const STEPS = [
   { id: 4, title: "المراجعة والنشر" },
 ];
 
+function withTimeout(promise, ms, timeoutMessage, onTimeout) {
+  let timer;
+  return new Promise((resolve, reject) => {
+    timer = setTimeout(() => {
+      try {
+        onTimeout?.();
+      } catch (_) {}
+      reject(new Error(timeoutMessage));
+    }, ms);
+
+    Promise.resolve(promise)
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
 const CATEGORY_OPTIONS = [
   { value: "general", label: "عام" },
   { value: "education", label: "تعليم" },
@@ -221,10 +242,14 @@ export default function UploadVideoForm() {
       if (!session) throw new Error("يجب تسجيل الدخول قبل رفع الفيديو.");
 
       setMessage("جاري تجهيز الفيديو...");
-      const [duration, generatedThumb] = await Promise.all([
-        getVideoDuration(videoFile),
-        thumbnailFile ? Promise.resolve(null) : generateThumbnailFromVideo(videoFile),
-      ]);
+      const [duration, generatedThumb] = await withTimeout(
+        Promise.all([
+          getVideoDuration(videoFile),
+          thumbnailFile ? Promise.resolve(null) : generateThumbnailFromVideo(videoFile),
+        ]),
+        45000,
+        "انتهت مهلة تجهيز الفيديو. حاول بملف أصغر أو اختر صورة مصغرة يدويًا."
+      );
       if (duration > MAX_VIDEO_DURATION_SECONDS) {
         throw new Error("مدة الفيديو تتجاوز الحد المسموح (30 دقيقة).")
       }
@@ -258,27 +283,38 @@ export default function UploadVideoForm() {
         );
       }
 
-      const [videoUploadResult, thumbUploadResult] = await Promise.all(uploadJobs);
+      const [videoUploadResult, thumbUploadResult] = await withTimeout(
+        Promise.all(uploadJobs),
+        180000,
+        "انتهت مهلة رفع الفيديو. تحقق من سرعة الإنترنت أو جرّب حجمًا أصغر."
+      );
       if (videoUploadResult?.error) throw videoUploadResult.error;
       if (thumbUploadResult?.error) throw thumbUploadResult.error;
 
-      const response = await fetch("/api/videos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          keywords: keywordList,
-          category,
-          video_path: videoPath,
-          thumbnail_path: thumbnailPath,
-          duration_sec: duration,
-          size_bytes: videoFile.size,
+      const apiController = new AbortController();
+      const response = await withTimeout(
+        fetch("/api/videos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            title,
+            description,
+            keywords: keywordList,
+            category,
+            video_path: videoPath,
+            thumbnail_path: thumbnailPath,
+            duration_sec: duration,
+            size_bytes: videoFile.size,
+          }),
+          signal: apiController.signal,
         }),
-      });
+        45000,
+        "انتهت مهلة حفظ بيانات الفيديو. حاول مرة أخرى.",
+        () => apiController.abort()
+      );
 
       const payload = await response.json();
       if (!response.ok) throw new Error(payload?.error || "فشل حفظ بيانات الفيديو.");
@@ -287,7 +323,14 @@ export default function UploadVideoForm() {
       router.push(`/watch/${payload.video.id}`);
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "حدث خطأ غير متوقع.");
+      const message = submitError instanceof Error ? submitError.message : "حدث خطأ غير متوقع.";
+      if (message.toLowerCase().includes("object exceeded the maximum allowed size") || message.toLowerCase().includes("maximum allowed size")) {
+        setError("حجم الفيديو أكبر من الحد المسموح في Supabase Storage bucket. ارفع حد bucket أو قلّل حجم الفيديو.");
+      } else if (message.toLowerCase().includes("timed out") || message.includes("انتهت مهلة")) {
+        setError(message);
+      } else {
+        setError(message);
+      }
     } finally {
       setPending(false);
     }
@@ -497,4 +540,10 @@ export default function UploadVideoForm() {
     </form>
   );
 }
+
+
+
+
+
+
 
