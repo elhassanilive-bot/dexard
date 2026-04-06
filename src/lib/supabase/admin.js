@@ -1,4 +1,4 @@
-let cachedAdminClient = null;
+﻿let cachedAdminClient = null;
 
 export function isSupabaseAdminConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -10,14 +10,17 @@ export async function getSupabaseAdminClient() {
 
   const { createClient } = await import("@supabase/supabase-js");
 
+  const dbSchema = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || process.env.SUPABASE_DB_SCHEMA || 'public';
   cachedAdminClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
     {
       auth: { persistSession: false },
+      db: { schema: dbSchema },
     }
   );
 
   return cachedAdminClient;
 }
+
 

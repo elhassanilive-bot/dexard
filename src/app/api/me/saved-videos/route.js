@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { THUMBNAIL_BUCKET } from "@/lib/video/constants";
 import { getAuthUserFromRequest } from "@/lib/video/supabaseServer";
@@ -7,7 +7,8 @@ function getSignerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !service) return null;
-  return createClient(url, service, { auth: { persistSession: false } });
+  const dbSchema = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || process.env.SUPABASE_DB_SCHEMA || 'public';
+  return createClient(url, service, { auth: { persistSession: false }, db: { schema: dbSchema } });
 }
 
 export async function GET(request) {
@@ -42,3 +43,4 @@ export async function GET(request) {
 
   return NextResponse.json({ items: items.filter(Boolean) });
 }
+

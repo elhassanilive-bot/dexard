@@ -59,7 +59,8 @@ export default function VideoGrid({ videos, mode = "home", allowPin = false, own
       {videos.map((video) => {
         const ownerByVideo = Boolean(viewerId && video?.user_id && String(viewerId) === String(video.user_id));
         const ownerByChannel = Boolean(viewerId && ownerId && String(viewerId) === String(ownerId));
-        const canPin = Boolean(allowPin && (video?.can_pin || ownerByVideo || ownerByChannel));
+        const isOwner = Boolean(video?.can_pin || ownerByVideo || ownerByChannel);
+        const canPin = Boolean(allowPin && isOwner);
 
         return (
           <VideoCard
@@ -67,6 +68,7 @@ export default function VideoGrid({ videos, mode = "home", allowPin = false, own
             video={video}
             mode={mode === "library" ? "library" : "home"}
             allowPin={canPin}
+            isOwner={isOwner}
             onPinChanged={onPinChanged}
           />
         );

@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import VideoGrid from "@/components/video/VideoGrid";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { FEED_PAGE_SIZE } from "@/lib/video/constants";
 
 const T = {
-  loading: "\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0645\u0632\u064a\u062f \u0645\u0646 \u0627\u0644\u0641\u064a\u062f\u064a\u0648\u0647\u0627\u062a...",
-  done: "\u0648\u0635\u0644\u062a \u0625\u0644\u0649 \u0646\u0647\u0627\u064a\u0629 \u0627\u0644\u0646\u062a\u0627\u0626\u062c",
-  failed: "\u062d\u062f\u062b \u062e\u0637\u0623 \u0623\u062b\u0646\u0627\u0621 \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u060c \u0623\u0639\u062f \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629",
+  loading: "جاري تحميل مزيد من الفيديوهات...",
+  done: "وصلت إلى نهاية النتائج",
+  failed: "حدث خطأ أثناء التحميل، أعد المحاولة",
 };
 
 function mergeUniqueById(current, incoming) {
@@ -65,7 +66,15 @@ export default function InfiniteVideoFeed({
           if (category.trim()) params.set("category", category.trim());
           if (channel.trim()) params.set("channel", channel.trim());
 
-          const response = await fetch(`/api/videos?${params.toString()}`, { cache: "no-store" });
+          let headers;
+          const supabase = await getSupabaseClient();
+          if (supabase) {
+            const { data: authData } = await supabase.auth.getSession();
+            const token = authData?.session?.access_token || "";
+            if (token) headers = { Authorization: `Bearer ${token}` };
+          }
+
+          const response = await fetch(`/api/videos?${params.toString()}`, { cache: "no-store", headers });
           if (!response.ok) throw new Error("request_failed");
 
           const payload = await response.json();
@@ -102,4 +111,3 @@ export default function InfiniteVideoFeed({
     </section>
   );
 }
-

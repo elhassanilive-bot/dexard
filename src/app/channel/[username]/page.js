@@ -1,4 +1,4 @@
-﻿import VideoGrid from "@/components/video/VideoGrid";
+﻿import ChannelContentTabs from "@/components/video/ChannelContentTabs";
 import ChannelSubscribeButton from "@/components/video/ChannelSubscribeButton";
 import { getChannelPage } from "@/lib/video/queries";
 import { formatCompactNumber } from "@/lib/video/format";
@@ -112,14 +112,8 @@ export default async function ChannelPage({ params }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-right text-xl font-bold text-slate-900">{T.channelVideos}</h2>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">{formatCompactNumber(videosCount)} {T.videos}</span>
-        </div>
-
-        <VideoGrid videos={videos} mode="channel" allowPin ownerId={channel.id} />
-      </section>
+      <ChannelContentTabs channel={channel} videos={videos} />
     </div>
   );
 }
+

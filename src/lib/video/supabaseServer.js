@@ -10,8 +10,10 @@ export function getSupabaseServerClient(accessToken) {
   const { url, anon } = getEnv();
   if (!url || !anon) return null;
 
+  const dbSchema = process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || process.env.SUPABASE_DB_SCHEMA || 'public';
   return createClient(url, anon, {
     auth: { persistSession: false },
+    db: { schema: dbSchema },
     global: accessToken
       ? {
           headers: {
@@ -36,3 +38,4 @@ export async function getAuthUserFromRequest(request) {
   const { data } = await supabase.auth.getUser(token);
   return { supabase, user: data?.user || null };
 }
+

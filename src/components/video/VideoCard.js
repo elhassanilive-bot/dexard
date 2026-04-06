@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatArabicDate, formatCompactNumber, formatDuration } from "@/lib/video/format";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import Image from "next/image";
@@ -18,8 +18,28 @@ const T = {
   pin: "تثبيت الفيديو",
   unpin: "إلغاء تثبيت الفيديو",
   pinHint: "يظهر في مقدمة القناة",
-  pinUnavailable: "التثبيت متاح لمالك القناة فقط",
   pinFailed: "تعذر تحديث حالة التثبيت",
+  save: "حفظ الفيديو",
+  unsave: "إزالة من المحفوظات",
+  addToPlaylist: "إضافة إلى قائمة تشغيل",
+  createPlaylist: "إنشاء قائمة تشغيل جديدة",
+  choosePlaylist: "اختر رقم قائمة التشغيل",
+  invalidPlaylistChoice: "اختيار غير صالح",
+  addedToPlaylist: "تمت الإضافة إلى القائمة",
+  removedFromPlaylist: "تمت الإزالة من القائمة",
+  share: "مشاركة",
+  copyLink: "نسخ الرابط",
+  notInterested: "غير مهتم",
+  report: "إبلاغ",
+  block: "حظر القناة",
+  unblock: "إلغاء حظر القناة",
+  edit: "تعديل الفيديو",
+  delete: "حذف الفيديو",
+  deleteConfirm: "هل تريد حذف هذا الفيديو نهائيا؟",
+  reportPrompt: "سبب الإبلاغ (spam / violence / hate / harassment / sexual / copyright / misleading / other)",
+  reportDone: "تم إرسال البلاغ",
+  loginRequired: "يجب تسجيل الدخول أولا",
+  actionFailed: "تعذر تنفيذ العملية",
 };
 
 function formatRelativeTimeCompact(value) {
@@ -43,15 +63,50 @@ function getContextLine(video) {
   return "";
 }
 
-function PinMenuButton({ canPin, pinned, pending, onToggle }) {
+function MenuItem({ label, hint = "", onClick, icon, danger = false, disabled = false }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={[
+        "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition disabled:opacity-60",
+        danger ? "text-rose-700 hover:bg-rose-50" : "text-slate-700 hover:bg-slate-100",
+      ].join(" ")}
+    >
+      <span className="text-right">
+        <span className="block font-semibold">{label}</span>
+        {hint ? <span className="mt-0.5 block text-[11px] text-slate-500">{hint}</span> : null}
+      </span>
+      {icon}
+    </button>
+  );
+}
+
+function VideoMenu({
+  isOwner,
+  canPin,
+  pinned,
+  pending,
+  saved,
+  blocked,
+  onPin,
+  onSave,
+  onAddToPlaylist,
+  onShare,
+  onCopy,
+  onHide,
+  onReport,
+  onBlock,
+  onEdit,
+  onDelete,
+}) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
 
   useEffect(() => {
     function onOutside(e) {
-      if (!wrapRef.current?.contains(e.target)) {
-        setOpen(false);
-      }
+      if (!wrapRef.current?.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", onOutside);
     return () => document.removeEventListener("mousedown", onOutside);
@@ -74,34 +129,137 @@ function PinMenuButton({ canPin, pinned, pending, onToggle }) {
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-10 z-30 min-w-48 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
-          {canPin ? (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={async () => {
-                await onToggle();
-                setOpen(false);
-              }}
-              className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
-            >
-              <span className="text-right">
-                <span className="block font-semibold">{pinned ? T.unpin : T.pin}</span>
-                <span className="block text-[11px] text-slate-500">{T.pinHint}</span>
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-800">
-                {pinned ? (
-                  <path d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.06.68L12 18.47l-4.94 2.46A.75.75 0 0 1 6 20.25V3.75A.75.75 0 0 1 6.75 3Z" />
-                ) : (
-                  <path d="M17.25 3A2.25 2.25 0 0 1 19.5 5.25v15a.75.75 0 0 1-1.09.67L12 17.72l-6.41 3.2A.75.75 0 0 1 4.5 20.25v-15A2.25 2.25 0 0 1 6.75 3h10.5Zm.75 2.25a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v13.79l5.66-2.83a.75.75 0 0 1 .68 0L18 19.04V5.25Z" />
-                )}
-              </svg>
-            </button>
+        <div className="absolute left-0 bottom-full mb-2 z-30 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
+          {isOwner ? (
+            <>
+              {canPin ? (
+                <MenuItem
+                  label={pinned ? T.unpin : T.pin}
+                  hint={T.pinHint}
+                  disabled={pending}
+                  onClick={async () => {
+                    await onPin();
+                    setOpen(false);
+                  }}
+                  icon={<span className="text-xs">📌</span>}
+                />
+              ) : null}
+              <MenuItem
+                label={T.addToPlaylist}
+                disabled={pending}
+                onClick={async () => {
+                  await onAddToPlaylist();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">📂</span>}
+              />
+              <MenuItem
+                label={T.edit}
+                disabled={pending}
+                onClick={async () => {
+                  await onEdit();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">✏️</span>}
+              />
+              <MenuItem
+                label={T.delete}
+                danger
+                disabled={pending}
+                onClick={async () => {
+                  await onDelete();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">🗑️</span>}
+              />
+
+              <MenuItem
+                label={T.share}
+                disabled={pending}
+                onClick={async () => {
+                  await onShare();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">↗</span>}
+              />
+              <MenuItem
+                label={T.copyLink}
+                disabled={pending}
+                onClick={async () => {
+                  await onCopy();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">🔗</span>}
+              />
+            </>
           ) : (
-            <div className="rounded-lg px-3 py-2 text-sm text-slate-500">
-              <span className="block font-semibold text-slate-600">{T.pin}</span>
-              <span className="mt-0.5 block text-[11px]">{T.pinUnavailable}</span>
-            </div>
+            <>
+              <MenuItem
+                label={saved ? T.unsave : T.save}
+                disabled={pending}
+                onClick={async () => {
+                  await onSave();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">💾</span>}
+              />
+              <MenuItem
+                label={T.addToPlaylist}
+                disabled={pending}
+                onClick={async () => {
+                  await onAddToPlaylist();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">📂</span>}
+              />
+              <MenuItem
+                label={T.share}
+                disabled={pending}
+                onClick={async () => {
+                  await onShare();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">↗</span>}
+              />
+              <MenuItem
+                label={T.copyLink}
+                disabled={pending}
+                onClick={async () => {
+                  await onCopy();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">🔗</span>}
+              />
+              <MenuItem
+                label={T.notInterested}
+                disabled={pending}
+                onClick={async () => {
+                  await onHide();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">🙈</span>}
+              />
+              <MenuItem
+                label={T.report}
+                danger
+                disabled={pending}
+                onClick={async () => {
+                  await onReport();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">🚩</span>}
+              />
+              <MenuItem
+                label={blocked ? T.unblock : T.block}
+                danger
+                disabled={pending}
+                onClick={async () => {
+                  await onBlock();
+                  setOpen(false);
+                }}
+                icon={<span className="text-xs">⛔</span>}
+              />
+            </>
           )}
         </div>
       ) : null}
@@ -109,9 +267,9 @@ function PinMenuButton({ canPin, pinned, pending, onToggle }) {
   );
 }
 
-function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeAgo, href, pinned, canPin, pending, onTogglePin }) {
+function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeAgo, href, pinned, menu }) {
   return (
-    <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
+    <article className="group rounded-3xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <Link href={href} className="block overflow-hidden">
         <div className="relative aspect-video bg-slate-200">
           {video.thumbnail_url ? (
@@ -159,16 +317,16 @@ function HomeLikeCard({ video, title, displayName, compactName, avatarUrl, timeA
             {title}
           </h3>
         </Link>
-        <PinMenuButton canPin={canPin} pinned={pinned} pending={pending} onToggle={onTogglePin} />
+        {menu}
       </div>
     </article>
   );
 }
 
-function LibraryCard({ video, title, displayName, href, pinned, canPin, pending, onTogglePin }) {
+function LibraryCard({ video, title, displayName, href, pinned, menu }) {
   const contextLine = getContextLine(video);
   return (
-    <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="group rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow">
       <div className="flex flex-col sm:flex-row">
         <Link href={href} className="block sm:w-[44%] md:w-[46%]">
           <div className="relative aspect-video bg-slate-200">
@@ -191,7 +349,7 @@ function LibraryCard({ video, title, displayName, href, pinned, canPin, pending,
         <div className="flex min-w-0 flex-1 flex-col justify-between p-3">
           <div className="space-y-2 text-right">
             <div className="flex items-start justify-between gap-2">
-              <PinMenuButton canPin={canPin} pinned={pinned} pending={pending} onToggle={onTogglePin} />
+              {menu}
               <Link href={href} className="min-w-0 flex-1">
                 <h3 className="line-clamp-2 text-base font-extrabold leading-6 text-slate-900" title={title}>{title}</h3>
               </Link>
@@ -211,30 +369,80 @@ function LibraryCard({ video, title, displayName, href, pinned, canPin, pending,
   );
 }
 
-export default function VideoCard({ video, mode = "home", allowPin = false, onPinChanged }) {
+async function getAccessToken() {
+  const supabase = await getSupabaseClient();
+  if (!supabase) return "";
+  const { data } = await supabase.auth.getSession();
+  return data?.session?.access_token || "";
+}
+
+export default function VideoCard({ video, mode = "home", allowPin = false, isOwner = false, onPinChanged }) {
   const href = `/watch/${video.id}`;
+  const title = video.title || T.untitled;
   const displayName = video.channel?.display_name || video.channel?.username || T.channel;
   const compactName = String(displayName || "").trim().length > 16 ? `${String(displayName || "").trim().slice(0, 16)}...` : String(displayName || "").trim();
   const avatarUrl = video.channel?.avatar_url || "";
   const timeAgo = formatRelativeTimeCompact(video.created_at);
-  const title = video.title || T.untitled;
+  const channelUsername = video.channel?.username || "";
 
   const [pinned, setPinned] = useState(Boolean(video?.is_pinned));
-  const [pendingPin, setPendingPin] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [removed, setRemoved] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadStatuses() {
+      if (isOwner) return;
+      const token = await getAccessToken();
+      const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+
+      const [saveRes, blockRes] = await Promise.all([
+        fetch(`/api/videos/${video.id}/save`, { headers }).catch(() => null),
+        channelUsername ? fetch(`/api/channels/${encodeURIComponent(channelUsername)}/block`, { headers }).catch(() => null) : Promise.resolve(null),
+      ]);
+
+      if (!alive) return;
+      if (saveRes?.ok) {
+        const payload = await saveRes.json().catch(() => ({}));
+        if (alive) setSaved(Boolean(payload?.saved));
+      }
+      if (blockRes?.ok) {
+        const payload = await blockRes.json().catch(() => ({}));
+        if (alive) setBlocked(Boolean(payload?.blocked));
+      }
+    }
+
+    loadStatuses();
+    return () => {
+      alive = false;
+    };
+  }, [video.id, channelUsername, isOwner]);
+
+  const shareUrl = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}/watch/${video.id}`;
+  }, [video.id]);
+
+  async function requireToken() {
+    const token = await getAccessToken();
+    if (!token) {
+      window.alert(T.loginRequired);
+      return "";
+    }
+    return token;
+  }
 
   async function togglePin() {
-    if (!allowPin || pendingPin) return;
-    setPendingPin(true);
+    if (!allowPin || pending) return;
+    setPending(true);
     const previous = pinned;
     setPinned(!previous);
-
     try {
-      const supabase = await getSupabaseClient();
-      if (!supabase) throw new Error("no_supabase");
-      const { data } = await supabase.auth.getSession();
-      const token = data?.session?.access_token || "";
+      const token = await requireToken();
       if (!token) throw new Error("no_auth");
-
       const response = await fetch(`/api/videos/${video.id}/pin`, {
         method: "POST",
         headers: {
@@ -243,24 +451,261 @@ export default function VideoCard({ video, mode = "home", allowPin = false, onPi
         },
         body: JSON.stringify({ pinned: !previous }),
       });
-
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload?.error || T.pinFailed);
-
       setPinned(Boolean(payload?.pinned));
       if (typeof onPinChanged === "function") onPinChanged(Boolean(payload?.pinned));
     } catch {
       setPinned(previous);
       window.alert(T.pinFailed);
     } finally {
-      setPendingPin(false);
+      setPending(false);
     }
   }
 
-  if (mode === "library") {
-    return <LibraryCard video={video} title={title} displayName={displayName} href={href} pinned={pinned} canPin={allowPin} pending={pendingPin} onTogglePin={togglePin} />;
+  async function toggleSave() {
+    const token = await requireToken();
+    if (!token || pending) return;
+    setPending(true);
+    try {
+      const response = await fetch(`/api/videos/${video.id}/save`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      setSaved(Boolean(payload?.saved));
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
   }
 
-  return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} pinned={pinned} canPin={allowPin} pending={pendingPin} onTogglePin={togglePin} />;
+  async function addToPlaylist() {
+    const token = await requireToken();
+    if (!token || pending) return;
+
+    setPending(true);
+    try {
+      const listResponse = await fetch(`/api/me/playlists?video_id=${encodeURIComponent(video.id)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const listPayload = await listResponse.json().catch(() => ({}));
+      if (!listResponse.ok) throw new Error(listPayload?.error || T.actionFailed);
+
+      const items = Array.isArray(listPayload?.items) ? listPayload.items : [];
+
+      let body = null;
+      if (items.length > 0) {
+        const lines = items.map((item, index) => `${index + 1}) ${item.title}${item.contains_video ? " (مضاف)" : ""}`);
+        const rawChoice = window.prompt(`${T.choosePlaylist}:\n${lines.join("\n")}\n0) ${T.createPlaylist}`, "1");
+        if (rawChoice === null) return;
+
+        const choice = Number.parseInt(String(rawChoice).trim(), 10);
+        if (!Number.isFinite(choice) || choice < 0 || choice > items.length) {
+          window.alert(T.invalidPlaylistChoice);
+          return;
+        }
+
+        if (choice === 0) {
+          const newTitle = String(window.prompt(T.createPlaylist, "المفضلة") || "").trim();
+          if (!newTitle) return;
+          body = { title: newTitle };
+        } else {
+          body = { playlist_id: items[choice - 1].id };
+        }
+      } else {
+        const newTitle = String(window.prompt(T.createPlaylist, "المفضلة") || "").trim();
+        if (!newTitle) return;
+        body = { title: newTitle };
+      }
+
+      const response = await fetch(`/api/videos/${video.id}/playlist`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(body),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+
+      const titleSuffix = payload?.playlist_title ? `: ${payload.playlist_title}` : "";
+      window.alert(`${payload?.added ? T.addedToPlaylist : T.removedFromPlaylist}${titleSuffix}`);
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function shareVideo() {
+    const url = shareUrl || `${location.origin}/watch/${video.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // ignore cancel/share errors
+    }
+  }
+
+  async function copyLink() {
+    try {
+      const url = shareUrl || `${location.origin}/watch/${video.id}`;
+      await navigator.clipboard.writeText(url);
+    } catch {
+      window.alert(T.actionFailed);
+    }
+  }
+
+  async function hideVideo() {
+    const token = await requireToken();
+    if (!token || pending) return;
+    setPending(true);
+    try {
+      const response = await fetch(`/api/videos/${video.id}/hide`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      if (payload?.hidden) setRemoved(true);
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function reportVideo() {
+    const token = await requireToken();
+    if (!token || pending) return;
+    const reason = String(window.prompt(T.reportPrompt, "other") || "").trim().toLowerCase();
+    if (!reason) return;
+
+    setPending(true);
+    try {
+      const response = await fetch(`/api/videos/${video.id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reason }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      window.alert(T.reportDone);
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function toggleBlockChannel() {
+    if (!channelUsername) return;
+    const token = await requireToken();
+    if (!token || pending) return;
+    setPending(true);
+    try {
+      const response = await fetch(`/api/channels/${encodeURIComponent(channelUsername)}/block`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      const nextBlocked = Boolean(payload?.blocked);
+      setBlocked(nextBlocked);
+      if (nextBlocked) setRemoved(true);
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function editVideo() {
+    const token = await requireToken();
+    if (!token || pending) return;
+
+    const nextTitle = String(window.prompt("العنوان الجديد", title) || "").trim();
+    if (!nextTitle) return;
+    const nextDescription = String(window.prompt("الوصف الجديد", video.description || "") || "").trim();
+
+    setPending(true);
+    try {
+      const response = await fetch(`/api/videos/${video.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: nextTitle, description: nextDescription, keywords: video.keywords || [], category: video.category || "general" }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      location.reload();
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function deleteVideo() {
+    const token = await requireToken();
+    if (!token || pending) return;
+    if (!window.confirm(T.deleteConfirm)) return;
+
+    setPending(true);
+    try {
+      const response = await fetch(`/api/videos/${video.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload?.error || T.actionFailed);
+      setRemoved(true);
+    } catch {
+      window.alert(T.actionFailed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  if (removed) return null;
+
+  const menu = (
+    <VideoMenu
+      isOwner={isOwner}
+      canPin={allowPin}
+      pinned={pinned}
+      pending={pending}
+      saved={saved}
+      blocked={blocked}
+      onPin={togglePin}
+      onSave={toggleSave}
+      onAddToPlaylist={addToPlaylist}
+      onShare={shareVideo}
+      onCopy={copyLink}
+      onHide={hideVideo}
+      onReport={reportVideo}
+      onBlock={toggleBlockChannel}
+      onEdit={editVideo}
+      onDelete={deleteVideo}
+    />
+  );
+
+  if (mode === "library") {
+    return <LibraryCard video={video} title={title} displayName={displayName} href={href} pinned={pinned} menu={menu} />;
+  }
+
+  return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} pinned={pinned} menu={menu} />;
 }
+
+
+
+
+
+
+
+
+
 

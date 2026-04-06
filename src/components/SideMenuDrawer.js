@@ -11,6 +11,7 @@ const T = {
   myChannel: "قناتي",
   myVideos: "مقاطعك",
   saved: "المحفوظات",
+  playlists: "قوائم التشغيل",
   subscriptions: "الاشتراكات",
   history: "السجل",
   engagement: "التفاعلات",
@@ -48,6 +49,13 @@ function MenuItemIcon({ name }) {
     );
   }
 
+  if (name === "playlists") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h12M6 12h12M6 18h8" />
+      </svg>
+    );
+  }
   if (name === "subscriptions") {
     return (
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
@@ -144,6 +152,7 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
     { href: channelHref, label: T.myChannel, icon: "my_channel" },
     { href: "/my-videos", label: T.myVideos, icon: "my_videos" },
     { href: "/saved", label: T.saved, icon: "saved" },
+    { href: "/playlists", label: T.playlists, icon: "playlists" },
     { href: "/subscriptions", label: T.subscriptions, icon: "subscriptions" },
     { href: "/history", label: T.history, icon: "history" },
     { href: "/engagement", label: T.engagement, icon: "engagement" },
@@ -207,4 +216,6 @@ export default function SideMenuDrawer({ open, onClose, isAuthed, profileUsernam
     </>
   );
 }
+
+
 
