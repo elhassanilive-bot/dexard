@@ -8,6 +8,11 @@ export const metadata = {
     template: "%s | Dexard Video",
   },
   description: "منصة فيديو أخلاقية لنشر المحتوى المفيد والهادف",
+  icons: {
+    icon: [{ url: "/icon.jpg", type: "image/jpeg", sizes: "3264x3264" }],
+    shortcut: "/icon.jpg",
+    apple: [{ url: "/icon.jpg", sizes: "3264x3264", type: "image/jpeg" }],
+  },
   manifest: "/manifest.webmanifest",
   themeColor: "#0f172a",
   appleWebApp: {
