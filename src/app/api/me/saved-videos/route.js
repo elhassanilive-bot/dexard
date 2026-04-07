@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { THUMBNAIL_BUCKET } from "@/lib/video/constants";
 import { getAuthUserFromRequest } from "@/lib/video/supabaseServer";
@@ -18,7 +18,7 @@ export async function GET(request) {
 
   const { data, error } = await supabase
     .from("saved_videos")
-    .select("created_at,video:videos!saved_videos_video_id_fkey(id,title,duration_sec,views_count,created_at,thumbnail_path,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url))")
+    .select("created_at,video:videos!saved_videos_video_id_fkey(id,user_id,title,duration_sec,views_count,created_at,thumbnail_path,channel:profiles!videos_user_id_fkey(username,display_name,avatar_url))")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 

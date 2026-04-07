@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { formatArabicDate, formatCompactNumber } from "@/lib/video/format";
+import InteractiveText from "@/components/video/InteractiveText";
 
 const T = {
   user: "مستخدم",
@@ -16,16 +17,51 @@ const T = {
   reply: "رد",
   sendReply: "إرسال",
   replyPlaceholder: "اكتب ردك...",
-  showReplies: "عرض",
+  showReplies: "عرض الردود",
   hideReplies: "إخفاء الردود",
-  ofReplies: "من الردود",
+  repliesWord: "ردود",
+  replyTo: "رد على",
+  publisher: "الناشر",
+  copyLink: "نسخ رابط",
+  copied: "تم النسخ",
+  jumpNew: "الانتقال لأول رد جديد",
+  showMore: "عرض المزيد",
 };
+
+const REPLIES_PAGE_SIZE = 10;
 
 const SORTS = [
   { key: "latest", label: T.newest },
   { key: "oldest", label: T.oldest },
   { key: "top", label: T.top },
 ];
+
+function getDisplayName(item) {
+  return item?.profile?.display_name || item?.profile?.username || T.user;
+}
+
+function toTs(value) {
+  const t = new Date(value || 0).getTime();
+  return Number.isFinite(t) ? t : 0;
+}
+
+function getSeenRepliesStorageKey(videoId) {
+  return `dexard_seen_replies_${videoId}`;
+}
+
+function flattenReplyThread(replies, parentName) {
+  const flat = [];
+
+  function walk(list, replyToName) {
+    for (const node of list || []) {
+      flat.push({ node, replyToName });
+      walk(node.replies || [], getDisplayName(node));
+    }
+  }
+
+  walk(replies || [], parentName);
+  return flat;
+}
 
 function SortIcon() {
   return (
@@ -75,35 +111,30 @@ function ReplyIcon() {
   );
 }
 
+function LinkIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m13.19 8.688 4.122-4.122a3 3 0 1 1 4.243 4.243l-4.122 4.122m-2.12 2.121-4.123 4.122a3 3 0 1 1-4.243-4.243l4.122-4.122m2.121-2.121 2.122 2.122" />
+    </svg>
+  );
+}
+
 function updateCommentInTree(list, commentId, updater) {
   return (list || []).map((item) => {
-    if (item.id === commentId) {
-      return updater(item);
-    }
+    if (item.id === commentId) return updater(item);
     if (!item.replies?.length) return item;
-    return {
-      ...item,
-      replies: updateCommentInTree(item.replies, commentId, updater),
-    };
+    return { ...item, replies: updateCommentInTree(item.replies, commentId, updater) };
   });
 }
 
-function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth }) {
+function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth, replyToName = null, compact = false, onCopyLink, copiedId }) {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyBody, setReplyBody] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
-  const [expandedReplies, setExpandedReplies] = useState(false);
-
-  const allReplies = item.replies || [];
-  const repliesOverflow = Math.max(0, allReplies.length - 2);
-  const visibleReplies = expandedReplies || allReplies.length <= 2 ? allReplies : allReplies.slice(0, 2);
 
   async function submitReply(event) {
     event.preventDefault();
-    if (!accessToken) {
-      onRequireAuth();
-      return;
-    }
+    if (!accessToken) return onRequireAuth();
     if (!replyBody.trim() || sendingReply) return;
 
     setSendingReply(true);
@@ -112,36 +143,38 @@ function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth }) {
       if (ok) {
         setReplyBody("");
         setReplyOpen(false);
-        setExpandedReplies(true);
       }
     } finally {
       setSendingReply(false);
     }
   }
 
-  const onLike = () => {
-    if (!accessToken) return onRequireAuth();
-    onReact(item.id, item.user_reaction === 1 ? 0 : 1);
-  };
-
-  const onDislike = () => {
-    if (!accessToken) return onRequireAuth();
-    onReact(item.id, item.user_reaction === -1 ? 0 : -1);
-  };
-
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-3 text-right">
+    <article id={`comment-${item.id}`} className={["rounded-xl border border-slate-200 bg-white text-right scroll-mt-24", compact ? "p-2.5" : "p-3"].join(" ")}>
       <div className="flex items-center justify-between gap-3">
-        <h4 className="truncate text-sm font-semibold text-slate-900">{item.profile?.display_name || item.profile?.username || T.user}</h4>
+        <div className="flex min-w-0 items-center gap-2">
+          <h4 className="truncate text-sm font-semibold text-slate-900">{getDisplayName(item)}</h4>
+          {item.is_creator ? <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">{T.publisher}</span> : null}
+        </div>
         <span className="text-[11px] text-slate-500">{formatArabicDate(item.created_at)}</span>
       </div>
 
-      <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-700">{item.body}</p>
+      {replyToName ? (
+        <div className="mt-1 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">
+          <span>{T.replyTo}</span>
+          <span className="font-semibold text-slate-700">@{replyToName}</span>
+        </div>
+      ) : null}
+
+      <div className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-700"><InteractiveText text={item.body} /></div>
 
       <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
         <button
           type="button"
-          onClick={onLike}
+          onClick={() => {
+            if (!accessToken) return onRequireAuth();
+            onReact(item.id, item.user_reaction === 1 ? 0 : 1);
+          }}
           className={[
             "inline-flex items-center gap-1 rounded-full border px-2 py-1 transition",
             item.user_reaction === 1 ? "border-red-300 bg-red-50 text-red-600" : "border-slate-200 text-slate-600 hover:bg-slate-50",
@@ -153,7 +186,10 @@ function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth }) {
 
         <button
           type="button"
-          onClick={onDislike}
+          onClick={() => {
+            if (!accessToken) return onRequireAuth();
+            onReact(item.id, item.user_reaction === -1 ? 0 : -1);
+          }}
           className={[
             "inline-flex items-center gap-1 rounded-full border px-2 py-1 transition",
             item.user_reaction === -1 ? "border-slate-700 bg-slate-800 text-white" : "border-slate-200 text-slate-600 hover:bg-slate-50",
@@ -167,12 +203,28 @@ function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth }) {
           type="button"
           onClick={() => {
             if (!accessToken) return onRequireAuth();
-            setReplyOpen((prev) => !prev);
+            const mentionName = String(item?.profile?.username || "").replace(/^@+/, "");
+            setReplyOpen((prev) => {
+              const next = !prev;
+              if (next && mentionName) {
+                setReplyBody((curr) => (String(curr || "").trim() ? curr : `@${mentionName} `));
+              }
+              return next;
+            });
           }}
           className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1 text-slate-600 transition hover:bg-slate-50"
         >
           <ReplyIcon />
           <span>{T.reply}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onCopyLink(item.id)}
+          className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1 text-slate-600 transition hover:bg-slate-50"
+        >
+          <LinkIcon />
+          <span>{copiedId === item.id ? T.copied : T.copyLink}</span>
         </button>
       </div>
 
@@ -189,45 +241,68 @@ function CommentNode({ item, accessToken, onReact, onReply, onRequireAuth }) {
           />
         </form>
       ) : null}
-
-      {visibleReplies.length ? (
-        <div className="mt-3 space-y-2 border-r border-slate-200 pr-3">
-          {visibleReplies.map((reply) => (
-            <CommentNode
-              key={reply.id}
-              item={reply}
-              accessToken={accessToken}
-              onReact={onReact}
-              onReply={onReply}
-              onRequireAuth={onRequireAuth}
-            />
-          ))}
-        </div>
-      ) : null}
-
-      {repliesOverflow > 0 ? (
-        <button
-          type="button"
-          onClick={() => setExpandedReplies((prev) => !prev)}
-          className="mt-2 text-xs font-medium text-slate-500 hover:text-slate-700"
-        >
-          {expandedReplies ? T.hideReplies : `${T.showReplies} +${repliesOverflow} ${T.ofReplies}`}
-        </button>
-      ) : null}
     </article>
   );
 }
 
 export default function CommentsSection({ videoId, accessToken }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [items, setItems] = useState([]);
   const [body, setBody] = useState("");
   const [sort, setSort] = useState("latest");
   const [loading, setLoading] = useState(false);
+  const [collapsedByRoot, setCollapsedByRoot] = useState({});
+  const [replyLimitByRoot, setReplyLimitByRoot] = useState({});
+  const [seenReplyAtByRoot, setSeenReplyAtByRoot] = useState({});
+  const [copiedCommentId, setCopiedCommentId] = useState(null);
 
   const requireAuth = useCallback(() => {
     router.push("/auth");
   }, [router]);
+
+  const rootReplyLists = useMemo(() => {
+    const map = {};
+    for (const root of items) {
+      map[root.id] = flattenReplyThread(root.replies || [], getDisplayName(root));
+    }
+    return map;
+  }, [items]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(getSeenRepliesStorageKey(videoId));
+      const parsed = raw ? JSON.parse(raw) : {};
+      setSeenReplyAtByRoot(parsed && typeof parsed === "object" ? parsed : {});
+    } catch {
+      setSeenReplyAtByRoot({});
+    }
+  }, [videoId]);
+
+  const persistSeenMap = useCallback(
+    (map) => {
+      try {
+        localStorage.setItem(getSeenRepliesStorageKey(videoId), JSON.stringify(map));
+      } catch {
+        // ignore local storage errors
+      }
+    },
+    [videoId],
+  );
+
+  const markRootSeen = useCallback(
+    (rootId, flatReplies) => {
+      const latestTs = (flatReplies || []).reduce((max, entry) => Math.max(max, toTs(entry?.node?.created_at)), 0);
+      if (!latestTs) return;
+
+      setSeenReplyAtByRoot((prev) => {
+        const next = { ...prev, [rootId]: latestTs };
+        persistSeenMap(next);
+        return next;
+      });
+    },
+    [persistSeenMap],
+  );
 
   const loadComments = useCallback(
     async (activeSort = sort) => {
@@ -237,7 +312,7 @@ export default function CommentsSection({ videoId, accessToken }) {
       const payload = await response.json();
       setItems(payload.items || []);
     },
-    [accessToken, videoId, sort]
+    [accessToken, videoId, sort],
   );
 
   useEffect(() => {
@@ -292,8 +367,16 @@ export default function CommentsSection({ videoId, accessToken }) {
         user_reaction: Number(payload.reaction || 0),
         likes_count: Number(payload.likes_count || 0),
         dislikes_count: Number(payload.dislikes_count || 0),
-      }))
+      })),
     );
+  }
+
+  function copyCommentLink(commentId) {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${origin}${pathname}#comment-${commentId}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    setCopiedCommentId(commentId);
+    window.setTimeout(() => setCopiedCommentId(null), 1400);
   }
 
   return (
@@ -323,20 +406,101 @@ export default function CommentsSection({ videoId, accessToken }) {
 
       <form onSubmit={submitRootComment} className="space-y-2 rounded-2xl border border-slate-200 bg-white p-4">
         <textarea value={body} onChange={(event) => setBody(event.target.value)} placeholder={T.bodyPlaceholder} rows={4} className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-red-300" />
-        <button type="submit" disabled={loading || !body.trim()} className="rounded-full bg-slate-900 px-5 py-2 text-sm font-bold text-white disabled:opacity-60">{T.post}</button>
+        <button type="submit" disabled={loading || !body.trim()} className="rounded-full bg-slate-900 px-5 py-2 text-sm font-bold text-white disabled:opacity-60">
+          {T.post}
+        </button>
       </form>
 
       <div className="space-y-3">
-        {items.map((item) => (
-          <CommentNode
-            key={item.id}
-            item={item}
-            accessToken={accessToken}
-            onReact={reactOnComment}
-            onReply={submitReply}
-            onRequireAuth={requireAuth}
-          />
-        ))}
+        {items.map((item) => {
+          const rootId = item.id;
+          const flatReplies = rootReplyLists[rootId] || [];
+          const repliesCount = flatReplies.length;
+          const isCollapsedDefault = repliesCount >= 2;
+          const isCollapsed = collapsedByRoot[rootId] ?? isCollapsedDefault;
+          const visibleLimit = replyLimitByRoot[rootId] ?? REPLIES_PAGE_SIZE;
+          const visibleReplies = isCollapsed ? [] : flatReplies.slice(0, visibleLimit);
+          const remaining = Math.max(0, repliesCount - visibleReplies.length);
+
+          const seenAt = Number(seenReplyAtByRoot[rootId] || 0);
+          const newReplies = flatReplies.filter((entry) => toTs(entry?.node?.created_at) > seenAt);
+          const firstNew = newReplies[0]?.node || null;
+
+          return (
+            <div key={rootId} className="space-y-2">
+              <CommentNode
+                item={item}
+                accessToken={accessToken}
+                onReact={reactOnComment}
+                onReply={submitReply}
+                onRequireAuth={requireAuth}
+                onCopyLink={copyCommentLink}
+                copiedId={copiedCommentId}
+              />
+
+              {repliesCount > 0 ? (
+                <div className="relative mr-3 space-y-2 border-r border-slate-200 pr-4">
+                  <span className="absolute -right-[5px] top-2 h-2.5 w-2.5 rounded-full bg-slate-300" aria-hidden="true" />
+
+                  {repliesCount >= 2 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCollapsedByRoot((prev) => ({ ...prev, [rootId]: !isCollapsed }));
+                        if (isCollapsed) {
+                          setReplyLimitByRoot((prev) => ({ ...prev, [rootId]: REPLIES_PAGE_SIZE }));
+                        }
+                      }}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+                    >
+                      {isCollapsed ? `${T.showReplies} +${repliesCount} ${T.repliesWord}` : T.hideReplies}
+                    </button>
+                  ) : null}
+
+                  {!isCollapsed && firstNew ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById(`comment-${firstNew.id}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        markRootSeen(rootId, flatReplies);
+                      }}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                    >
+                      {T.jumpNew} (+{newReplies.length})
+                    </button>
+                  ) : null}
+
+                  {visibleReplies.map(({ node, replyToName }) => (
+                    <CommentNode
+                      key={node.id}
+                      item={node}
+                      accessToken={accessToken}
+                      onReact={reactOnComment}
+                      onReply={submitReply}
+                      onRequireAuth={requireAuth}
+                      replyToName={replyToName}
+                      compact
+                      onCopyLink={copyCommentLink}
+                      copiedId={copiedCommentId}
+                    />
+                  ))}
+
+                  {!isCollapsed && remaining > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setReplyLimitByRoot((prev) => ({ ...prev, [rootId]: visibleLimit + REPLIES_PAGE_SIZE }))}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+                    >
+                      {T.showMore} +{remaining} {T.repliesWord}
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+
         {items.length === 0 ? <p className="text-sm text-slate-500">{T.empty}</p> : null}
       </div>
     </section>

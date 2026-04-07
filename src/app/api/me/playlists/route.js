@@ -1,5 +1,19 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getAuthUserFromRequest } from "@/lib/video/supabaseServer";
+
+function attachCounts(items, links) {
+  const countMap = new Map();
+  for (const row of links || []) {
+    const key = String(row?.playlist_id || "");
+    if (!key) continue;
+    countMap.set(key, (countMap.get(key) || 0) + 1);
+  }
+
+  return (items || []).map((item) => ({
+    ...item,
+    videos_count: countMap.get(String(item.id)) || 0,
+  }));
+}
 
 export async function GET(request) {
   const { supabase, user } = await getAuthUserFromRequest(request);
@@ -11,18 +25,33 @@ export async function GET(request) {
 
   const { data: playlists, error } = await supabase
     .from("playlists")
-    .select("id,title,privacy,created_at")
+    .select("id,title,description,privacy,created_at")
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const items = playlists || [];
-  if (!videoId || items.length === 0) {
-    return NextResponse.json({ items: items.map((item) => ({ ...item, contains_video: false })) });
+  if (items.length === 0) {
+    return NextResponse.json({ items: [] });
   }
 
   const playlistIds = items.map((item) => item.id);
+  const { data: allLinks, error: allLinksError } = await supabase
+    .from("playlist_videos")
+    .select("playlist_id")
+    .in("playlist_id", playlistIds);
+
+  if (allLinksError) return NextResponse.json({ error: allLinksError.message }, { status: 500 });
+
+  const withCounts = attachCounts(items, allLinks);
+
+  if (!videoId) {
+    return NextResponse.json({
+      items: withCounts.map((item) => ({ ...item, contains_video: false })),
+    });
+  }
+
   const { data: links, error: linksError } = await supabase
     .from("playlist_videos")
     .select("playlist_id")
@@ -32,8 +61,9 @@ export async function GET(request) {
   if (linksError) return NextResponse.json({ error: linksError.message }, { status: 500 });
 
   const linked = new Set((links || []).map((row) => row.playlist_id));
+
   return NextResponse.json({
-    items: items.map((item) => ({
+    items: withCounts.map((item) => ({
       ...item,
       contains_video: linked.has(item.id),
     })),
@@ -66,9 +96,9 @@ export async function POST(request) {
       description: description ? description.slice(0, 1000) : null,
       privacy,
     })
-    .select("id,title,privacy,created_at")
+    .select("id,title,description,privacy,created_at")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ playlist: data }, { status: 201 });
+  return NextResponse.json({ playlist: { ...data, videos_count: 0 } }, { status: 201 });
 }

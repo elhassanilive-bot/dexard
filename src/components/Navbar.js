@@ -1,4 +1,4 @@
-﻿/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import Link from "next/link";
@@ -8,14 +8,14 @@ import SideMenuDrawer from "@/components/SideMenuDrawer";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 const T = {
-  menu: "القائمة",
-  home: "الرئيسية",
-  upload: "رفع فيديو",
-  notifications: "الإشعارات",
-  profile: "الملف الشخصي",
-  guestAccount: "الحساب",
-  searchPlaceholder: "ابحث عن فيديو أو قناة",
-  search: "بحث",
+  menu: "\u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  home: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629",
+  upload: "\u0631\u0641\u0639 \u0641\u064a\u062f\u064a\u0648",
+  notifications: "\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062a",
+  profile: "\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a",
+  guestAccount: "\u0627\u0644\u062d\u0633\u0627\u0628",
+  searchPlaceholder: "\u0627\u0628\u062d\u062b \u0639\u0646 \u0641\u064a\u062f\u064a\u0648 \u0623\u0648 \u0642\u0646\u0627\u0629",
+  search: "\u0628\u062d\u062b",
 };
 
 function HomeGlyph({ active }) {
@@ -189,7 +189,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const term = q.trim();
-    if (term.length < 2) {
+    if (term.length < 1) {
       setSuggestions([]);
       return;
     }
@@ -199,7 +199,7 @@ export default function Navbar() {
         const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(term)}`);
         if (!response.ok) return;
         const payload = await response.json();
-        setSuggestions(Array.isArray(payload?.items) ? payload.items.slice(0, 6) : []);
+        setSuggestions(Array.isArray(payload?.items) ? payload.items.slice(0, 10) : []);
       } catch {
         setSuggestions([]);
       }
@@ -273,12 +273,15 @@ export default function Navbar() {
             <button type="submit" className="absolute left-1.5 top-1.5 rounded-full bg-slate-900 px-4 py-2 text-xs font-bold text-white">
               {T.search}
             </button>
-            {suggestions.length > 0 && q.trim().length >= 2 ? (
+            {suggestions.length > 0 ? (
               <div className="absolute right-0 top-14 z-10 w-full max-h-80 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
                 {suggestions.map((item) => (
                   <Link key={`${item.type}-${item.id}`} href={item.href} className="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 last:border-b-0">
-                    <span className="font-bold text-slate-900">{item.title}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">{item.typeLabel}</span>
+                    <span className="flex items-center gap-2 font-bold text-slate-900">
+                      <span>{item.title}</span>
+                      {item.type === "hashtag" && typeof item.count === "number" ? <span className="text-[11px] font-semibold text-rose-600">+{item.count}</span> : null}
+                    </span>
+                    <span className={["rounded-full px-2 py-0.5 text-[11px]", item.type === "hashtag" ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-slate-500"].join(" ")}>{item.typeLabel}</span>
                   </Link>
                 ))}
               </div>
@@ -296,12 +299,15 @@ export default function Navbar() {
                 className="h-11 w-full rounded-full border border-slate-300/80 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-red-300 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
               />
               <button type="submit" className="absolute left-1.5 top-1.5 rounded-full bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">{T.search}</button>
-              {suggestions.length > 0 && q.trim().length >= 2 ? (
+              {suggestions.length > 0 ? (
                 <div className="absolute right-0 top-12 z-10 w-full max-h-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
                   {suggestions.map((item) => (
                     <Link key={`m-${item.type}-${item.id}`} href={item.href} className="flex items-center justify-between border-b border-slate-100 px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 last:border-b-0">
-                      <span className="font-bold text-slate-900">{item.title}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">{item.typeLabel}</span>
+                      <span className="flex items-center gap-2 font-bold text-slate-900">
+                        <span>{item.title}</span>
+                        {item.type === "hashtag" && typeof item.count === "number" ? <span className="text-[11px] font-semibold text-rose-600">+{item.count}</span> : null}
+                      </span>
+                      <span className={["rounded-full px-2 py-0.5 text-[11px]", item.type === "hashtag" ? "bg-rose-50 text-rose-600" : "bg-slate-100 text-slate-500"].join(" ")}>{item.typeLabel}</span>
                     </Link>
                   ))}
                 </div>

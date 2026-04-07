@@ -6,6 +6,7 @@ import Image from "next/image";
 import VideoGrid from "@/components/video/VideoGrid";
 import { formatCompactNumber, formatDuration } from "@/lib/video/format";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import InteractiveText from "@/components/video/InteractiveText";
 
 const T = {
   videosTab: "الفيديوهات",
@@ -58,9 +59,9 @@ function PlaylistCard({ item }) {
         </div>
 
         <div className="min-w-0 text-right">
-          <Link href={`/playlist/${item.id}`} className="block truncate text-lg font-bold text-slate-900 hover:underline">{item.title}</Link>
+          <Link href={`/playlist/${item.id}`} className="block truncate text-lg font-bold text-slate-900 hover:underline"><InteractiveText text={item.title} linkify={false} /></Link>
           <p className="mt-1 text-xs text-slate-500">{privacyLabel} - {formatCompactNumber(item.videos_count || 0)} {T.videos}</p>
-          {item.description ? <p className="mt-2 line-clamp-2 text-sm text-slate-600">{item.description}</p> : null}
+          {item.description ? <p className="mt-2 line-clamp-2 text-sm text-slate-600"><InteractiveText text={item.description} /></p> : null}
           <div className="mt-2">
             <Link href={`/playlist/${item.id}`} className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">{T.openPlaylist}</Link>
           </div>
@@ -68,7 +69,7 @@ function PlaylistCard({ item }) {
             <div className="mt-3 flex flex-wrap justify-end gap-2">
               {item.videos.slice(0, 3).map((video) => (
                 <Link key={video.id} href={`/watch/${video.id}`} className="truncate rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                  {video.title || "فيديو"}
+                  <InteractiveText text={video.title || "فيديو"} linkify={false} />
                 </Link>
               ))}
             </div>
@@ -263,3 +264,5 @@ export default function ChannelContentTabs({ channel, videos }) {
     </section>
   );
 }
+
+

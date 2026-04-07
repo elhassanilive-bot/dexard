@@ -20,13 +20,14 @@ function buildReactionMaps(rows, currentUserId) {
   return { likes, dislikes, mine };
 }
 
-function mapComments(list, reactionMaps) {
+function mapComments(list, reactionMaps, ownerId) {
   const root = [];
   const byId = new Map();
 
   (list || []).forEach((item) => {
     byId.set(item.id, {
       ...item,
+      is_creator: Boolean(ownerId && item.user_id === ownerId),
       likes_count: reactionMaps.likes.get(item.id) || 0,
       dislikes_count: reactionMaps.dislikes.get(item.id) || 0,
       user_reaction: reactionMaps.mine.get(item.id) || 0,
@@ -96,6 +97,9 @@ export async function GET(request, { params }) {
   const sortParam = String(url.searchParams.get("sort") || "latest").toLowerCase();
   const sort = ["latest", "oldest", "top"].includes(sortParam) ? sortParam : "latest";
 
+  const { data: videoRow } = await supabase.from("videos").select("user_id").eq("id", id).maybeSingle();
+  const ownerId = videoRow?.user_id || null;
+
   const { data, error } = await supabase
     .from("video_comments")
     .select("id,video_id,parent_id,user_id,body,created_at,profile:profiles!video_comments_user_id_fkey(username,display_name,avatar_url)")
@@ -121,7 +125,7 @@ export async function GET(request, { params }) {
   }
 
   const maps = buildReactionMaps(reactionRows, user?.id || null);
-  const tree = mapComments(data || [], maps).map(enrich);
+  const tree = mapComments(data || [], maps, ownerId).map(enrich);
   const sorted = sortList(tree, sort);
 
   return NextResponse.json({ items: stripInternal(sorted), sort });

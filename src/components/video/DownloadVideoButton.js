@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import LottieIcon from "@/components/ui/LottieIcon";
 
 const DOWNLOADS_KEY = "dexard_downloads";
 
 function DownloadIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-5 w-5">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="h-5 w-5">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
     </svg>
   );
@@ -46,6 +47,7 @@ export default function DownloadVideoButton({ videoId, accessToken }) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [downloadAnim, setDownloadAnim] = useState(0);
 
   async function download() {
     if (!accessToken) {
@@ -77,6 +79,7 @@ export default function DownloadVideoButton({ videoId, accessToken }) {
       URL.revokeObjectURL(url);
 
       saveDownloadItem(videoId, filename);
+      setDownloadAnim(Date.now());
       setDone(true);
       window.setTimeout(() => setDone(false), 1400);
     } catch {
@@ -92,15 +95,16 @@ export default function DownloadVideoButton({ videoId, accessToken }) {
       type="button"
       onClick={download}
       disabled={loading}
-      aria-label="تنزيل الفيديو"
-      title={done ? "تم التنزيل" : failed ? "تعذر التنزيل" : "تنزيل الفيديو"}
+      aria-label="تنزيل"
+      title={done ? "تم التنزيل" : failed ? "تعذر التنزيل" : "تنزيل"}
       className={[
-        "inline-flex items-center justify-center rounded-full border p-2.5 transition",
-        done ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "border-slate-300 text-slate-700",
+        "inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-bold text-slate-800 transition hover:bg-slate-200",
+        done ? "border-emerald-300 bg-emerald-50 text-emerald-700" : "",
         failed ? "border-rose-300 bg-rose-50 text-rose-700" : "",
       ].join(" ")}
     >
-      <DownloadIcon />
+      <LottieIcon jsonPath="/animations/download.json" playToken={downloadAnim} className="h-5 w-5" fallback={<DownloadIcon />} />
+      <span>{done ? "تم" : "تنزيل"}</span>
     </button>
   );
 }

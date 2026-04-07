@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatArabicDate, formatCompactNumber, formatDuration } from "@/lib/video/format";
@@ -63,22 +63,102 @@ function getContextLine(video) {
   return "";
 }
 
+function MenuGlyph({ name, danger = false }) {
+  const cls = danger ? "h-4 w-4 text-rose-600" : "h-4 w-4 text-slate-700";
+  switch (name) {
+    case "pin":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M14 3l7 7-2 2-3-3-4 4 2 6-1.2 1.2-4.7-4.7L3.2 20.6 2 19.4l4.9-4.9-4.7-4.7L3.4 8l6 2 4-4-3-3 2-2z" />
+        </svg>
+      );
+    case "playlist":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M4 6h10M4 11h10M4 16h6" />
+          <path d="M18 10v8M14 14h8" />
+        </svg>
+      );
+    case "edit":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M4 20l4.5-1 9.4-9.4a2.1 2.1 0 10-3-3L5.5 16 4 20z" />
+        </svg>
+      );
+    case "trash":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" />
+        </svg>
+      );
+    case "share":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M14 4h6v6" />
+          <path d="M10 14L20 4" />
+          <path d="M20 13v7h-7" />
+          <path d="M4 20h9" />
+        </svg>
+      );
+    case "link":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M10 14l4-4" />
+          <path d="M7 17a4 4 0 010-6l2-2a4 4 0 116 6l-1 1" />
+          <path d="M17 7a4 4 0 010 6l-2 2a4 4 0 11-6-6l1-1" />
+        </svg>
+      );
+    case "bookmark":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M6 4h12v16l-6-3-6 3V4z" />
+        </svg>
+      );
+    case "eyeOff":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M3 3l18 18" />
+          <path d="M10.6 10.6a2 2 0 002.8 2.8" />
+          <path d="M9.9 4.2A10.8 10.8 0 0112 4c5.6 0 9.7 4.2 10 8-.1 1.2-.6 2.5-1.4 3.7" />
+          <path d="M6.2 6.2C4.3 7.6 3.1 9.6 2 12c.7 1.6 1.8 3.1 3.2 4.3" />
+        </svg>
+      );
+    case "flag":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <path d="M5 4v16" />
+          <path d="M5 5h12l-2.5 4L17 13H5" />
+        </svg>
+      );
+    case "ban":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className={cls}>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M7 17l10-10" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 function MenuItem({ label, hint = "", onClick, icon, danger = false, disabled = false }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      dir="rtl"
       className={[
-        "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition disabled:opacity-60",
+        "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm transition disabled:opacity-60",
         danger ? "text-rose-700 hover:bg-rose-50" : "text-slate-700 hover:bg-slate-100",
       ].join(" ")}
     >
-      <span className="text-right">
+      <span className="flex-1 text-right">
         <span className="block font-semibold">{label}</span>
         {hint ? <span className="mt-0.5 block text-[11px] text-slate-500">{hint}</span> : null}
       </span>
-      {icon}
+      {icon ? <span className="inline-flex h-5 w-5 items-center justify-center">{icon}</span> : null}
     </button>
   );
 }
@@ -129,7 +209,7 @@ function VideoMenu({
       </button>
 
       {open ? (
-        <div className="absolute left-0 bottom-full mb-2 z-30 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
+        <div className="absolute right-0 top-full mt-2 z-40 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 text-right shadow-xl">
           {isOwner ? (
             <>
               {canPin ? (
@@ -141,7 +221,7 @@ function VideoMenu({
                     await onPin();
                     setOpen(false);
                   }}
-                  icon={<span className="text-xs">📌</span>}
+                  icon={<MenuGlyph name="pin" />}
                 />
               ) : null}
               <MenuItem
@@ -151,7 +231,7 @@ function VideoMenu({
                   await onAddToPlaylist();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">📂</span>}
+                icon={<MenuGlyph name="playlist" />}
               />
               <MenuItem
                 label={T.edit}
@@ -160,7 +240,7 @@ function VideoMenu({
                   await onEdit();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">✏️</span>}
+                icon={<MenuGlyph name="edit" />}
               />
               <MenuItem
                 label={T.delete}
@@ -170,7 +250,7 @@ function VideoMenu({
                   await onDelete();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">🗑️</span>}
+                icon={<MenuGlyph name="trash" danger />}
               />
 
               <MenuItem
@@ -180,7 +260,7 @@ function VideoMenu({
                   await onShare();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">↗</span>}
+                icon={<MenuGlyph name="share" />}
               />
               <MenuItem
                 label={T.copyLink}
@@ -189,7 +269,7 @@ function VideoMenu({
                   await onCopy();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">🔗</span>}
+                icon={<MenuGlyph name="link" />}
               />
             </>
           ) : (
@@ -201,7 +281,7 @@ function VideoMenu({
                   await onSave();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">💾</span>}
+                icon={<MenuGlyph name="bookmark" />}
               />
               <MenuItem
                 label={T.addToPlaylist}
@@ -210,7 +290,7 @@ function VideoMenu({
                   await onAddToPlaylist();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">📂</span>}
+                icon={<MenuGlyph name="playlist" />}
               />
               <MenuItem
                 label={T.share}
@@ -219,7 +299,7 @@ function VideoMenu({
                   await onShare();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">↗</span>}
+                icon={<MenuGlyph name="share" />}
               />
               <MenuItem
                 label={T.copyLink}
@@ -228,7 +308,7 @@ function VideoMenu({
                   await onCopy();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">🔗</span>}
+                icon={<MenuGlyph name="link" />}
               />
               <MenuItem
                 label={T.notInterested}
@@ -237,7 +317,7 @@ function VideoMenu({
                   await onHide();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">🙈</span>}
+                icon={<MenuGlyph name="eyeOff" />}
               />
               <MenuItem
                 label={T.report}
@@ -247,7 +327,7 @@ function VideoMenu({
                   await onReport();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">🚩</span>}
+                icon={<MenuGlyph name="flag" danger />}
               />
               <MenuItem
                 label={blocked ? T.unblock : T.block}
@@ -257,7 +337,7 @@ function VideoMenu({
                   await onBlock();
                   setOpen(false);
                 }}
-                icon={<span className="text-xs">⛔</span>}
+                icon={<MenuGlyph name="ban" danger />}
               />
             </>
           )}
@@ -699,13 +779,3 @@ export default function VideoCard({ video, mode = "home", allowPin = false, isOw
 
   return <HomeLikeCard video={video} title={title} displayName={displayName} compactName={compactName} avatarUrl={avatarUrl} timeAgo={timeAgo} href={href} pinned={pinned} menu={menu} />;
 }
-
-
-
-
-
-
-
-
-
-

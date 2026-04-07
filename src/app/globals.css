@@ -567,4 +567,11 @@ body {
   font-weight: 600 !important;
 }
 
+/* Section/page headings: make them compact and only slightly larger than description text */
+main :where(h1, h2, h3, h4):where(.font-black, .font-extrabold, .font-bold) {
+  font-size: clamp(1.02rem, 1.4vw, 1.18rem) !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0 !important;
+}
+
 

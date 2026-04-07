@@ -8,28 +8,33 @@ import { formatCompactNumber } from "@/lib/video/format";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
 const T = {
-  notFound: "قائمة التشغيل غير موجودة",
-  loadFailed: "تعذر تحميل قائمة التشغيل",
-  videos: "فيديو",
-  views: "مشاهدة",
-  by: "بواسطة",
-  private: "خاصة",
-  unlisted: "غير مدرجة",
-  public: "عامة",
-  empty: "لا توجد فيديوهات داخل هذه القائمة حاليا",
-  save: "حفظ التعديلات",
-  saving: "جاري الحفظ...",
-  deletePlaylist: "حذف القائمة",
-  deletingPlaylist: "جاري الحذف...",
-  confirmDeletePlaylist: "هل تريد حذف قائمة التشغيل نهائيا؟",
-  removeVideo: "إزالة من القائمة",
-  updateDone: "تم تحديث القائمة",
-  removeDone: "تمت إزالة الفيديو من القائمة",
-  reorderTitle: "ترتيب الفيديوهات",
-  reorderHint: "اسحب الفيديو وأفلته لتغيير ترتيبه",
-  saveOrder: "حفظ الترتيب",
-  savingOrder: "جاري حفظ الترتيب...",
-  orderSaved: "تم حفظ ترتيب القائمة",
+  notFound: "\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062a\u0634\u063a\u064a\u0644 \u063a\u064a\u0631 \u0645\u0648\u062c\u0648\u062f\u0629",
+  loadFailed: "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062a\u0634\u063a\u064a\u0644",
+  videos: "\u0641\u064a\u062f\u064a\u0648",
+  views: "\u0645\u0634\u0627\u0647\u062f\u0629",
+  by: "\u0628\u0648\u0627\u0633\u0637\u0629",
+  private: "\u062e\u0627\u0635\u0629",
+  unlisted: "\u063a\u064a\u0631 \u0645\u062f\u0631\u062c\u0629",
+  public: "\u0639\u0627\u0645\u0629",
+  empty: "\u0644\u0627 \u062a\u0648\u062c\u062f \u0641\u064a\u062f\u064a\u0648\u0647\u0627\u062a \u062f\u0627\u062e\u0644 \u0647\u0630\u0647 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u062d\u0627\u0644\u064a\u0627",
+  save: "\u062d\u0641\u0638 \u0627\u0644\u062a\u0639\u062f\u064a\u0644\u0627\u062a",
+  saving: "\u062c\u0627\u0631\u064a \u0627\u0644\u062d\u0641\u0638...",
+  deletePlaylist: "\u062d\u0630\u0641 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  deletingPlaylist: "\u062c\u0627\u0631\u064a \u0627\u0644\u062d\u0630\u0641...",
+  confirmDeletePlaylist: "\u0647\u0644 \u062a\u0631\u064a\u062f \u062d\u0630\u0641 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062a\u0634\u063a\u064a\u0644 \u0646\u0647\u0627\u0626\u064a\u0627\u061f",
+  removeVideo: "\u0625\u0632\u0627\u0644\u0629 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  updateDone: "\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  removeDone: "\u062a\u0645\u062a \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0641\u064a\u062f\u064a\u0648 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  reorderTitle: "\u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0641\u064a\u062f\u064a\u0648\u0647\u0627\u062a",
+  reorderHint: "\u0627\u0633\u062d\u0628 \u0627\u0644\u0641\u064a\u062f\u064a\u0648 \u0648\u0623\u0641\u0644\u062a\u0647 \u0644\u062a\u063a\u064a\u064a\u0631 \u062a\u0631\u062a\u064a\u0628\u0647",
+  saveOrder: "\u062d\u0641\u0638 \u0627\u0644\u062a\u0631\u062a\u064a\u0628",
+  savingOrder: "\u062c\u0627\u0631\u064a \u062d\u0641\u0638 \u0627\u0644\u062a\u0631\u062a\u064a\u0628...",
+  orderSaved: "\u062a\u0645 \u062d\u0641\u0638 \u062a\u0631\u062a\u064a\u0628 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  copyLink: "\u0646\u0633\u062e \u0631\u0627\u0628\u0637 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  share: "\u0645\u0634\u0627\u0631\u0643\u0629 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  copied: "\u062a\u0645 \u0646\u0633\u062e \u0631\u0627\u0628\u0637 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  untitledPlaylist: "\u0642\u0627\u0626\u0645\u0629 \u062a\u0634\u063a\u064a\u0644",
+  untitledVideo: "\u0641\u064a\u062f\u064a\u0648",
 };
 
 function privacyLabel(value) {
@@ -112,6 +117,30 @@ export default function PlaylistDetailsPageClient({ playlistId }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function copyPlaylistLink() {
+    try {
+      const url = `${window.location.origin}/playlist/${playlistId}`;
+      await navigator.clipboard.writeText(url);
+      window.alert(T.copied);
+    } catch {
+      window.alert(T.loadFailed);
+    }
+  }
+
+  async function sharePlaylistLink() {
+    const url = `${window.location.origin}/playlist/${playlistId}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: item?.title || T.untitledPlaylist, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      window.alert(T.copied);
+    } catch {
+      // ignore
+    }
+  }
 
   async function savePlaylist(event) {
     event.preventDefault();
@@ -287,6 +316,10 @@ export default function PlaylistDetailsPageClient({ playlistId }) {
           )}
         </p>
         {item.description ? <p className="mt-3 text-sm leading-7 text-slate-700">{item.description}</p> : null}
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
+          <button type="button" onClick={copyPlaylistLink} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{T.copyLink}</button>
+          <button type="button" onClick={sharePlaylistLink} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{T.share}</button>
+        </div>
       </section>
 
       {item.is_owner ? (
@@ -295,13 +328,13 @@ export default function PlaylistDetailsPageClient({ playlistId }) {
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="اسم القائمة"
+              placeholder="\u0627\u0633\u0645 \u0627\u0644\u0642\u0627\u0626\u0645\u0629"
               className="h-11 w-full rounded-xl border border-slate-300 px-3 text-right text-sm outline-none focus:border-slate-500"
             />
             <textarea
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="وصف القائمة"
+              placeholder="\u0648\u0635\u0641 \u0627\u0644\u0642\u0627\u0626\u0645\u0629"
               rows={3}
               className="w-full rounded-xl border border-slate-300 px-3 py-2 text-right text-sm outline-none focus:border-slate-500"
             />
@@ -381,7 +414,7 @@ export default function PlaylistDetailsPageClient({ playlistId }) {
                       </button>
 
                       <Link href={`/watch/${video.id}`} className="min-w-0 truncate text-sm font-semibold text-slate-800 hover:underline">
-                        {index + 1}. {video.title || "فيديو"}
+                        {index + 1}. {video.title || T.untitledVideo}
                       </Link>
                     </div>
                   );

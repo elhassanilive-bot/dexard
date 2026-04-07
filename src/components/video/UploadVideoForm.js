@@ -521,6 +521,11 @@ export default function UploadVideoForm() {
 
       {message ? <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{message}</p> : null}
       {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</p> : null}
+      {pending ? (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+          الرفع قيد التنفيذ... لا تغلق الصفحة حتى يكتمل النشر.
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
         <button type="button" onClick={goBack} disabled={step === 1 || pending} className="rounded-full border border-slate-300 px-5 py-2 text-sm font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50">
@@ -540,6 +545,8 @@ export default function UploadVideoForm() {
     </form>
   );
 }
+
+
 
 
 

@@ -30,7 +30,7 @@ export default function VideoEngagementClient({ videoId, channelUsername, likesC
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex flex-wrap items-center gap-2">
           <ReactionBar
             videoId={videoId}
@@ -39,16 +39,20 @@ export default function VideoEngagementClient({ videoId, channelUsername, likesC
             initialReaction={userReaction}
             accessToken={accessToken}
           />
-          <SavedVideoButton videoId={videoId} accessToken={accessToken} />
+
           <CopyVideoLinkButton videoId={videoId} accessToken={accessToken} />
           <DownloadVideoButton videoId={videoId} accessToken={accessToken} />
+          <SavedVideoButton videoId={videoId} accessToken={accessToken} />
         </div>
-        <SubscribeButton
-          username={channelUsername}
-          initialSubscribed={isSubscribed}
-          initialCount={subscribersCount}
-          accessToken={accessToken}
-        />
+
+        <div className="mt-3 border-t border-slate-100 pt-3">
+          <SubscribeButton
+            username={channelUsername}
+            initialSubscribed={isSubscribed}
+            initialCount={subscribersCount}
+            accessToken={accessToken}
+          />
+        </div>
       </div>
 
       <CommentsSection videoId={videoId} accessToken={accessToken} />
