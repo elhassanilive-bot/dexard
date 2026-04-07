@@ -10,3 +10,4 @@
 ✓ Starting...
 Creating turbopack project { dir: 'C:\\Project-Web\\DexardWeb', testMode: true }
 ✓ Ready in 1331ms
+ GET / 200 in 2.8s (compile: 1240ms, render: 1563ms)
