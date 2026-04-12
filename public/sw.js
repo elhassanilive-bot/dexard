@@ -1,5 +1,5 @@
-﻿const CACHE_NAME = "dexard-v1";
-const STATIC_ASSETS = ["/", "/manifest.webmanifest", "/icon.svg"];
+﻿const CACHE_NAME = "dexard-v2";
+const STATIC_ASSETS = ["/", "/manifest.webmanifest", "/icon.png?v=20260412a", "/favicon.ico?v=20260412a"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -40,3 +40,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+

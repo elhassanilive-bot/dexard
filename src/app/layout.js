@@ -9,9 +9,13 @@ export const metadata = {
   },
   description: "منصة فيديو أخلاقية لنشر المحتوى المفيد والهادف",
   icons: {
-    icon: [{ url: "/icon.jpg", type: "image/jpeg", sizes: "3264x3264" }],
-    shortcut: "/icon.jpg",
-    apple: [{ url: "/icon.jpg", sizes: "3264x3264", type: "image/jpeg" }],
+    icon: [
+      { url: "/favicon.ico?v=20260412a", type: "image/png", sizes: "32x32" },
+      { url: "/icon.png?v=20260412a", type: "image/png", sizes: "192x192" },
+      { url: "/icon.png?v=20260412a", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.ico?v=20260412a",
+    apple: [{ url: "/apple-touch-icon.png?v=20260412a", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
   themeColor: "#0f172a",
